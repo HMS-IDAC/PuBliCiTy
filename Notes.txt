@@ -3,6 +3,7 @@ Dependencies:
 	conda install -c anaconda matplotlib
 	pip install tifffile
 	conda install scikit-image
+	pip install joblib
 
 
 Building documentation:

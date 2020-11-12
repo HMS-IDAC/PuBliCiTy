@@ -251,12 +251,24 @@ def pause(interval):
     time.sleep(interval)
 
 def tifread(path):
+    """
+    reads .tif image file
+    """
+
     return tifffile.imread(path)
 
 def tifwrite(I,path):
+    """
+    writes image *I* into tif file with fill path *path*
+    """
+
     tifffile.imsave(path, I)
 
 def imshow(I,**kwargs):
+    """
+    displays image; *kwargs* are passed to matplotlib's *imshow* function
+    """
+
     if not kwargs:
         plt.imshow(I,cmap='gray')
     else:
@@ -266,6 +278,11 @@ def imshow(I,**kwargs):
     plt.show()
 
 def imshowlist(L,**kwargs):
+    """
+    displays list of images, e.g. *L = [I1, I2, I3]*;
+    *kwargs* are passed to matplotlib's *imshow* function
+    """
+
     n = len(L)
     for i in range(n):
         plt.subplot(1, n, i+1)
@@ -277,15 +294,34 @@ def imshowlist(L,**kwargs):
     plt.show()
 
 def imread(path):
+    """
+    generic image reading function; simply wraps skimage.io.imread;
+    for .tif images, use *tifread* instead
+    """
+
     return skio.imread(path)
 
 def imwrite(I,path):
+    """
+    generic image writing function; simply wraps skimage.io.imsave;
+    for .tif images, use *tifwrite* instead
+    """
+
     skio.imsave(path,I)
 
 def rgb2gray(I):
+    """
+    wrap around skimage.color.rgb2grey
+    """
+
     return skimageRGB2Grey(I)
 
 def im2double(I):
+    """
+    converts uint16, uint8, float32 images into float64 images,
+    while normalizing intensity values to range [0, 1]
+    """
+
     if I.dtype == 'uint16':
         return I.astype('float64')/65535
     elif I.dtype == 'uint8':
@@ -299,12 +335,27 @@ def im2double(I):
         return I
 
 def imDouble2UInt16(I):
+    """
+    converts uint16 image to double
+    """
+
     return np.uint16(65535*I)
 
 def imD2U16(I):
+    """
+    converts uint16 image to double
+    """
+
     return imDouble2UInt16(I)
 
 def size(I):
+    """
+    returns the size of image *I*, as given by numpy's shape property; literally:
+    ::
+
+        return list(I.shape)
+    """
+
     return list(I.shape)
 
 def imresizeDouble(I,sizeOut): # input and output are double
@@ -326,6 +377,18 @@ def imresize3UInt16(I,sizeOut): # input and output are UInt16
     return np.uint16(trfm.resize(I.astype(float),(sizeOut[0],sizeOut[1],sizeOut[2]),mode='reflect',order=0))
 
 def imresize(I, sizeOut):
+    """
+    resizes 2D, single channel image (types uint8, uint16, float32 or float64 (double))
+
+    *inputs:*
+        I: image
+
+        sizeOut: list of output sizes in rows and columns, e.g. [n_rows, n_cols]
+
+    *output:*
+        resized image
+    """
+
     dType = I.dtype
     if dType == 'uint8':
         return imresizeUInt8(I, sizeOut)
@@ -335,6 +398,18 @@ def imresize(I, sizeOut):
         return imresizeDouble(I, sizeOut)
 
 def imresize3(I, sizeOut):
+    """
+    resizes 3D, single channel image (types uint8, uint16, float32 or float64 (double))
+
+    *inputs:*
+        I: image
+
+        sizeOut: list of output sizes in planes, rows and columns, e.g. [n_plns, n_rows, n_cols]
+
+    *output:*
+        resized image
+    """
+
     dType = I.dtype
     if dType == 'uint8':
         return imresize3UInt8(I, sizeOut)
@@ -344,6 +419,37 @@ def imresize3(I, sizeOut):
         return imresize3Double(I, sizeOut)
 
 def imresize3FromPlanePathList(imPathList, resizeFactor, zStretch, resizeBufferFolderPath):
+    """
+    resizes 3D images from a list of .tif paths;
+    this is a convenience function to help visualizing large 3D image files,
+    which are often times saved as a set of planes in a folder;
+    2D resizing is aplied for every plane, in parallel, then 3D resizing is applied
+    in the stack of planes; thus this does not perform 'true' 3D resizing, which is
+    why it's best to use it for visualization purposes, and cases where true 3D would
+    be impractical due to memory constraints
+
+    *inputs:*
+        imPathList: list of .tif paths
+
+        resizeFactor: float between 0 and 1 indicating amount of resizing
+
+        zStretch: float between 0 and 1 indicating proportion of z stretch
+        w.r.t. xy to be performed
+
+        resizeBufferFolderPath: path to folder where resized 2D planes are temporarily saved;
+        this folder is created by the script, then removed when processing is finished
+
+    *output:*
+        resized 3D image
+
+    *example:*
+    ::
+
+        planePathList = listfiles('/path/to/folder', '.tif')
+        V = imresize3FromPlanePathList(planePathList, 0.1, 6.17, '/path/to/resize/buffer')
+        tifwrite(V, '/path/to/resized/image.tif')
+    """
+
     print('--------------------------------------------------')
     print('getting plane size')
         
