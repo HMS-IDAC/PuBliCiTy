@@ -1,0 +1,11 @@
+Dependencies:
+	conda install -c conda-forge opencv
+	conda install -c anaconda matplotlib
+	pip install tifffile
+	conda install scikit-image
+
+
+Building documentation:
+	https://medium.com/@richdayandnight/a-simple-tutorial-on-how-to-document-your-python-project-using-sphinx-and-rinohtype-177c22a15b5b
+
+	http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html

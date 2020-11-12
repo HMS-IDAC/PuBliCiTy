@@ -1,4 +1,6 @@
-# general purpose functions
+"""
+general purpose functions
+"""
 
 from os.path import *
 from os import listdir, makedirs, remove
@@ -22,15 +24,37 @@ from skimage.measure import regionprops
 from skimage.filters import threshold_otsu
 import cv2
 
-def pf(x):
-    print(x)
 
 def fileparts(path): # path = file path
+    """
+    splits file path into components
+
+    *input:*
+        file path, e.g. '/path/to/file.ext'
+
+    *output:*
+        [root, name, extension], e.g. ['/path/to', 'file', 'ext']
+    """
+
     [p,f] = split(path)
     [n,e] = splitext(f)
     return [p,n,e]
 
-def listfiles(path,token,tokenExclude=None): # path = folder path
+def listfiles(path,token,tokenExclude=None):
+    """
+    lists files in folder
+
+    *inputs:*
+        path: path to folder
+
+        token: a string; filenames containig this are selected
+
+        tokenExcluded: a string; filenames containing this are excluded
+
+    *output:*
+        list of file paths
+    """
+
     l = []
     if tokenExclude is None:
         for f in listdir(path):
@@ -45,7 +69,19 @@ def listfiles(path,token,tokenExclude=None): # path = folder path
     l.sort()
     return l
 
-def listsubdirs(path,returnFullPath=True): # path = folder path
+def listsubdirs(path,returnFullPath=True):
+    """
+    lists subdirectories inside directory
+
+    *inputs:*
+        path: full path to directory
+
+        returnFullPath: if to return full path, as opposed to subfolders
+
+    *output:*
+        list of paths
+    """
+
     l = []
     for f in listdir(path):
         fullPath = join(path,f)
@@ -57,41 +93,116 @@ def listsubdirs(path,returnFullPath=True): # path = folder path
     l.sort()
     return l
 
-def pathjoin(p,ne): # '/path/to/folder', 'name.extension' (or a subfolder)
+def pathjoin(p,ne):
+    """
+    joins root path with file name (including extension)
+
+    *inputs:*
+        p: root path, e.g. '/path/to/folder'
+
+        ne: name+extension, e.g. 'file.ext'
+
+    *output:*
+        joined path, e.g. '/path/to/folder/file.ext'
+
+    """
+
     return join(p,ne)
 
 def saveData(data,path,verbose=False):
+    """
+    saves python data via pickle
+
+    *inputs:*
+        data: data to save
+
+        path: full path where to save
+
+        verbose: True or False; if True, logs terminal message that data is being saved
+    """
+
     if verbose:
         print('saving data')
     dataFile = open(path, 'wb')
     pickle.dump(data, dataFile)
 
 def loadData(path,verbose=False):
+    """
+    loads python data via pickle
+
+    *inputs:*
+        path: full path to data file
+
+        verbose: True or False; if True, logs terminal message that data is being saved
+
+    *output:*
+        data
+
+    """
+
     if verbose:
         print('loading data')
     dataFile = open(path, 'rb')
     return pickle.load(dataFile)
 
 def createFolderIfNonExistent(path):
+    """
+    creates folder if non existent
+
+    *input:*
+        full path to folder
+    """
+
     if not exists(path): # from os.path
         makedirs(path)
 
 def removeFolderIfExistent(path):
+    """
+    removes folder if existent
+
+    *input*:
+        full path to folder
+    """
+
     if exists(path):
         shutil.rmtree(path)
 
 def moveFile(fullPathSource,folderPathDestination):
+    """
+    moves file with full path *fullPathSource* to folder *folderPathDestination*
+    """
+
+
     [p,n,e] = fileparts(fullPathSource)
     shutil.move(fullPathSource,pathjoin(folderPathDestination,n+e))
 
 def copyFile(fullPathSource,folderPathDestination):
+    """
+    copies file with full path *fullPathSource* to folder *folderPathDestination*
+    """
+
     [p,n,e] = fileparts(fullPathSource)
     shutil.copy(fullPathSource,pathjoin(folderPathDestination,n+e))
 
 def removeFile(path):
+    """
+    removes file with full path *fullPathSource*; no warnings shown
+    """
+
     remove(path)
 
 def writeTable(path,colTitles,matrix):
+    """
+    simple csv table writing function using Pandas
+
+    *inputs:*
+        path: full path where to save csv
+
+        colTitles: list of column titles, e.g. ['col1', 'col2']
+
+        matrix: data to save; number of columns should equal len(colTitles)
+    """
+
     T = {}
     for i in range(len(colTitles)):
         T[colTitles[i]] = matrix[:,i]
@@ -99,18 +210,44 @@ def writeTable(path,colTitles,matrix):
     df.to_csv(path, index=False)
 
 def readTable(path):
+    """
+    simple csv reading function using Pandas
+
+    *input:*
+        full path to csv table
+
+    *outputs:*
+        [colTitles, matrix], where
+
+        colTitles: list of column titles
+
+        matrix: data
+    """
+
     df = pd.read_csv(path)
     colTitles = df.columns.to_list()
     matrix = df.to_numpy()
     return colTitles, matrix
 
 def tic():
+    """
+    returns current time
+    """
+
     return time.time()
 
 def toc(t0):
+    """
+    prints elapsed time given reference time *t0* (obtained via *tic()*)
+    """
+
     print('elapsed time:', time.time()-t0)
 
 def pause(interval):
+    """
+    pauses process for *interval* seconds
+    """
+
     time.sleep(interval)
 
 def tifread(path):
@@ -956,14 +1093,26 @@ def imbinarize(I):
 
 def bwInterpSingleObjectMasks(I, J, a):
     """
-    Usage example:
-    
-    X,Y = np.meshgrid(np.arange(400),np.arange(400))
-    I = np.sqrt((X-150)**2+(Y-210)**2) < 50
-    J = np.sqrt(0.5*(X-200)**2+(Y-200)**2) < 100
-    a = 0.5
-    K = bwInterpSingleObjectMasks(I, J, a)
-    imshowlist([I, K, J])
+    interpolates two object masks
+
+    *inputs:*
+        I, J: masks
+        
+        a: interpolation factor, between 0 and 1;
+        0 returns I, 1 return J
+
+    *output:*
+        interpolated mask
+
+    *example:*
+    ::
+
+        X,Y = np.meshgrid(np.arange(400),np.arange(400))
+        I = np.sqrt((X-150)**2+(Y-210)**2) < 50
+        J = np.sqrt(0.5*(X-200)**2+(Y-200)**2) < 100
+        a = 0.5
+        K = bwInterpSingleObjectMasks(I, J, a)
+        imshowlist([I, K, J])
     """
 
     I = np.uint8(I)

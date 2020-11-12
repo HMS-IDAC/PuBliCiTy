@@ -1,5 +1,8 @@
-from toolbox.imtools import *
-from toolbox.ftools import *
+"""
+2D semantic segmentation
+"""
+
+from gpfunctions import *
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt

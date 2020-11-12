@@ -1,5 +1,9 @@
+"""
+split/merge utilities to help processing large images; 'overlapping patches' version
+"""
+
 import numpy as np
-from toolbox.imtools import *
+from gpfunctions import *
 
 class PI2D:
     Image = None

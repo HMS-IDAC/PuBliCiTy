@@ -1,3 +1,7 @@
+"""
+split/merge utilities to help processing large images; 'valid convolutions' version
+"""
+
 import numpy as np
 
 class PI2D:
