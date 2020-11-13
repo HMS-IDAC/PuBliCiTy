@@ -485,7 +485,19 @@ def imresize3FromPlanePathList(imPathList, resizeFactor, zStretch, resizeBufferF
 
     return imresize3(V,[int(np.round(nPlanes*resizeFactor*zStretch)), V.shape[1], V.shape[2]])
 
-def imrescale(im,factor): # with respect to center
+def imrescale(im,factor):
+    """
+    rescales image with respect to center
+
+    *inputs:*
+        im: image
+
+        factor: rescale factor (float)
+
+    *output:*
+        rescaled image
+    """
+
     im2 = trfm.rescale(im,factor,mode='constant')
     [w1,h1] = im.shape
     [w2,h2] = im2.shape
@@ -501,13 +513,55 @@ def imrescale(im,factor): # with respect to center
     return imout
 
 def imadjustgamma(im,gamma): # gamma should be in range (0,1)
+    """
+    gamma correction of luminance values
+
+    *inputs:*
+        im: image
+
+        gamma: gamma factor, a float between 0 and 1
+
+    *output:*
+        corrected image
+    """
+
     return adjust_gamma(im,gamma)
 
 def imadjustcontrast(im,c): # c should be in the range (0,Inf); c = 1 -> contrast unchanged
+    """
+    simple contrast adjustment, keeping average pixel intensity
+
+    *inputs:*
+        im: image
+
+        c: contrast adjustment factor; should be in the range (0, Inf);
+        c = 1 implies no contrast change
+
+    *output:*
+        contrast-adjusted image
+
+    *implementation:*
+    ::
+
+        m = np.mean(im)
+        return (im-m)*c+m        
+    """
+
     m = np.mean(im)
     return (im-m)*c+m
 
 def normalize(I):
+    """
+    linearly maps pixel intensity to range [0, 1], unless the original range is 0
+    (i.e. all pixel values are the same), in which case output = input
+
+    *input:*
+        image
+
+    *output:*
+        normalized image
+    """
+
     m = np.min(I)
     M = np.max(I)
     if M > m:
@@ -516,6 +570,18 @@ def normalize(I):
         return I
 
 def snormalize(I):
+    """
+    linearly changes pixel intensities so that the output pixel intensities
+    have average 0 and standard deviation 1;
+    if original standard deviation is 0, output = input
+
+    *input:*
+        image
+
+    *output:*
+        normalized image
+    """
+
     m = np.mean(I)
     s = np.std(I)
     if s > 0:
@@ -524,6 +590,27 @@ def snormalize(I):
         return I
 
 def imadjust(I):
+    """
+    maps 1st pixel intensity percentile to 0 and 99th to 1, linearly stretching
+    intensities in between, and clipping intensities outside the interval
+
+    *input:*
+        image
+
+    *output:*
+        adjusted image
+
+    *implementation:*
+    ::
+
+        p1 = np.percentile(I,1)
+        p99 = np.percentile(I,99)
+        I = (I-p1)/(p99-p1)
+        I[I < 0] = 0
+        I[I > 1] = 1
+        return I    
+    """
+
     p1 = np.percentile(I,1)
     p99 = np.percentile(I,99)
     I = (I-p1)/(p99-p1)
@@ -532,31 +619,121 @@ def imadjust(I):
     return I
 
 def histeq(I):
+    """
+    returns histogram-equalized input
+    """
+
     return equalize_hist(I)
 
 def adapthisteq(I):
+    """
+    returns adaptive-histogram-equalized input
+    """
+
     return equalize_adapthist(I)
 
 def cat(a,I,J):
+    """
+    concatenates *I* and *J* along axis *a*
+
+    *implementation:*
+    ::
+
+        return np.concatenate((I,J),axis=a)        
+    """
+
     return np.concatenate((I,J),axis=a)
 
 def imtranslate(im,tx,ty): # tx: columns, ty: rows
+    """
+    applies translation transform
+
+    *inputs:*
+        im: image
+
+        tx: translation in x (columns)
+
+        ty: translation in y (rows)
+
+    *output:*
+        translated image
+    """
+
     tform = trfm.SimilarityTransform(translation = (-tx,-ty))
     return trfm.warp(im,tform,mode='constant')
 
-def imrotate(im,angle): # in degrees, with respect to center
+def imrotate(im,angle):
+    """
+    rotates image with respect to center
+
+    *inputs:*
+        im: image
+
+        angle: angle of rotation, in degrees
+
+    *output:*
+        rotated image
+    """
+
     return trfm.rotate(im,angle)
 
 def imerode(I,r):
+    """
+    binary erosion
+
+    *inputs*:
+        I: binary image
+
+        r: radius of disk structuring element
+
+    *output:*
+        eroded image
+    """
+
     return binary_erosion(I, disk(r))
 
 def imdilate(I,r):
+    """
+    binary dilation
+
+    *inputs*:
+        I: binary image
+
+        r: radius of disk structuring element
+
+    *output:*
+        dilated image
+    """
     return binary_dilation(I, disk(r))
 
 def imerode3(I,r):
+    """
+    binary 3D erosion
+
+    *inputs*:
+        I: binary 3D image
+
+        r: radius of sphere structuring element
+
+    *output:*
+        eroded 3D image
+    """
+
     return morphology.binary_erosion(I, ball(r))
 
 def imdilate3(I,r):
+    """
+    binary 3D dilation
+
+    *inputs*:
+        I: binary 3D image
+
+        r: radius of sphere structuring element
+
+    *output:*
+        dilated 3D image
+    """
+
     return morphology.binary_dilation(I, ball(r))
 
 def sphericalStructuralElement(imShape,fRadius):
@@ -566,18 +743,82 @@ def sphericalStructuralElement(imShape,fRadius):
         return ball(fRadius,dtype=float)
 
 def medfilt(I,filterRadius):
+    """
+    median filter using spherical structural element (disk for 2D images and sphere for 3D)
+
+    *inputs:*
+        I: image
+
+        filterRadius: radius of median filter
+
+    *output:*
+        filtered image
+    """
+
     return median_filter(I,footprint=sphericalStructuralElement(I.shape,filterRadius))
 
 def maxfilt(I,filterRadius):
+    """
+    max filter using spherical structural element (disk for 2D images and sphere for 3D)
+
+    *inputs:*
+        I: image
+
+        filterRadius: radius of max filter
+
+    *output:*
+        filtered image
+    """
+
     return maximum_filter(I,footprint=sphericalStructuralElement(I.shape,filterRadius))
 
 def minfilt(I,filterRadius):
+    """
+    min filter using spherical structural element (disk for 2D images and sphere for 3D)
+
+    *inputs:*
+        I: image
+
+        filterRadius: radius of min filter
+
+    *output:*
+        filtered image
+    """
+
     return minimum_filter(I,footprint=sphericalStructuralElement(I.shape,filterRadius))
 
 def ptlfilt(I,percentile,filterRadius):
+    """
+    percentile filter using spherical structural element (disk for 2D images and sphere for 3D);
+    note that ptlfilt(I, 50, filterRadius) = medfilt(I, filterRadius)
+
+    *inputs:*
+        I: image
+        
+        percentile: percentile value between 0 and 100
+
+        filterRadius: radius of percentile filter
+
+    *output:*
+        filtered image
+    """
     return percentile_filter(I,percentile,footprint=sphericalStructuralElement(I.shape,filterRadius))
 
 def imgaussfilt(I,sigma,**kwargs):
+    """
+    gaussian (blur) filter
+
+    *inputs:*
+        I: image
+
+        sigma: sigma parameter of gaussian filter
+
+        kwargs: extra arguments passed to scipy.ndimage.gaussian_filter
+
+    *output:*
+        filtered image   
+    """
+
     return gaussian_filter(I,sigma,**kwargs)
 
 def imlogfilt(I,sigma,**kwargs):
