@@ -822,9 +822,36 @@ def imgaussfilt(I,sigma,**kwargs):
     return gaussian_filter(I,sigma,**kwargs)
 
 def imlogfilt(I,sigma,**kwargs):
+    """
+    laplacian of gaussian (LoG) filter
+
+    *inputs:*
+        I: image
+
+        sigma: sigma parameter of LoG filter
+
+        kwargs: extra arguments passed to scipy.ndimage.gaussian_laplace
+
+    *output:*
+        filtered image; technically the inverse of the LoG operator, so that bright spots
+        in the image result in bright spots in the output
+    """    
+
     return -gaussian_laplace(I,sigma,**kwargs)
 
 def imgradmag(I,sigma): # edge likelihood
+    """
+    gradient magnitude, i.e., norm of the gradient image
+
+    *inputs:*
+        I: 2D or 3D image
+
+        sigma: sigma for filtering before computing the gradient
+
+    *output:*
+        gradient magnitude image
+    """
+
     if len(I.shape) == 2:
         dx = imgaussfilt(I,sigma,order=[0,1])
         dy = imgaussfilt(I,sigma,order=[1,0])
@@ -836,6 +863,23 @@ def imgradmag(I,sigma): # edge likelihood
         return np.sqrt(dx**2+dy**2+dz**2)
 
 def localstats(I,radius,justfeatnames=False):
+    """
+    computes local percentiles in 2D images
+
+    *input:*
+        I: 2D image
+
+        radius: radius of disk structuring element
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of percentile filtered images, for percentiles 10, 30, 50, 70, 90,
+        if justfeatnames = False, otherwise just feature names
+
+    """
+
     ptls = [10,30,50,70,90]
     featNames = []
     for i in range(len(ptls)):
@@ -850,6 +894,23 @@ def localstats(I,radius,justfeatnames=False):
     return F
 
 def localstats3(I,radius,justfeatnames=False):
+    """
+    computes local percentiles in 3D images
+
+    *input:*
+        I: 3D image
+
+        radius: radius of sphere structuring element
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of percentile filtered images, for percentiles 10, 30, 50, 70, 90,
+        if justfeatnames = False, otherwise just feature names
+
+    """
+
     ptls = [10,30,50,70,90]
     featNames = []
     for i in range(len(ptls)):
@@ -864,6 +925,28 @@ def localstats3(I,radius,justfeatnames=False):
     return F
 
 def imderivatives(I,sigmas,justfeatnames=False):
+    """
+    computes stack of derivatives of 2D image, up to second order
+
+    *inputs:*
+        I: 2D image
+
+        sigmas: list of sigmas for gaussian filtering before computing derivatives
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of derivatives if justfeatnames = False, otherwise just feature names;
+        for each sigma, the following derivatives are computed: d0, dx, dy, dxx, dxy, dyy,
+        normGrad (gradient magnitude), normHessDiag (norm of diagonal of hessian)
+
+        derivatives are indexed by the last dimension,
+        which is good for ML features but not for visualization,
+        in which case the expected dimensions are [plane,channel,y(row),x(col)];
+        to obtain that ordering, do D = np.moveaxis(D,[0,3,1,2],[0,1,2,3]) on the output D
+    """
+
     if type(sigmas) is not list:
         sigmas = [sigmas]
     derivPerSigmaFeatNames = ['d0','dx','dy','dxx','dxy','dyy','normGrad','normHessDiag']
@@ -892,11 +975,28 @@ def imderivatives(I,sigmas,justfeatnames=False):
         D[:,:,nDerivativesPerSigma*i+6] = np.sqrt(dx**2+dy**2)
         D[:,:,nDerivativesPerSigma*i+7] = np.sqrt(dxx**2+dyy**2)
     return D
-    # derivatives are indexed by the last dimension, which is good for ML features but not for visualization,
-    # in which case the expected dimensions are [plane,channel,y(row),x(col)]; to obtain that ordering, do
-    # D = np.moveaxis(D,[0,3,1,2],[0,1,2,3])
 
 def imderivatives3(I,sigmas,justfeatnames=False):
+    """
+    computes stack of derivatives of 3D image, up to second order
+
+    *inputs:*
+        I: 3D image
+
+        sigmas: list of sigmas for gaussian filtering before computing derivatives
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of derivatives if justfeatnames = False, otherwise just feature names;
+        for each sigma, the following derivatives are computed:
+        d0, dx, dy, dz, dxx, dxy, dxz, dyy, dyz, dzz,
+        normGrad (gradient magnitude), normHessDiag (norm of diagonal of hessian)
+
+        derivatives are indexed by the last dimension
+    """
+
     if type(sigmas) is not list:
         sigmas = [sigmas]
 
@@ -939,12 +1039,29 @@ def imderivatives3(I,sigmas,justfeatnames=False):
         # D[:,:,:,nDerivativesPerSigma*i   ] = imgaussfilt(I,sigma)
         # D[:,:,:,nDerivativesPerSigma*i+1 ] = np.sqrt(dx**2+dy**2+dz**2)
         # D[:,:,:,nDerivativesPerSigma*i+2 ] = np.sqrt(dxx**2+dyy**2+dzz**2)
-    return D
-    # derivatives are indexed by the last dimension, which is good for ML features but not for visualization,
-    # in which case the expected dimensions are [plane,y(row),x(col)]; to obtain that ordering, do
-    # D = np.moveaxis(D,[2,0,1],[0,1,2])
+    return D    
 
 def imfeatures(I=[],sigmaDeriv=1,sigmaLoG=1,locStatsRad=0,justfeatnames=False):
+    """
+    computes 2D image features based on *imderivatives*, *imlogfilt*, and *localstats*
+
+    *inputs:*
+        I: 2D image, or empty list [] (which is convenient when justfeatnames=True)
+
+        sigmaDeriv: list of sigmas to pass on to *imderivatives*
+
+        sigmaLoG: list of sigmas to use in *imlogfilt*
+
+        locStatsRad: list of radii to use in *localstats*
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of features, indexed by last dimension
+        if justfeatnames = False; otherwise just feature names
+    """
+
     if type(sigmaDeriv) is not list:
         sigmaDeriv = [sigmaDeriv]
     if type(sigmaLoG) is not list:
@@ -974,6 +1091,28 @@ def imfeatures(I=[],sigmaDeriv=1,sigmaLoG=1,locStatsRad=0,justfeatnames=False):
     return F
 
 def imfeatures3(I=[],sigmaDeriv=2,sigmaLoG=2,sigmaSurf=[],locStatsRad=0,justfeatnames=False):
+    """
+    computes 3D image features based on *imderivatives3*, *imlogfilt3*, and *localstats3*
+
+    *inputs:*
+        I: 3D image, or empty list [] (which is convenient when justfeatnames=True)
+
+        sigmaDeriv: list of sigmas to pass on to *imderivatives3*
+
+        sigmaLoG: list of sigmas to use in *imlogfilt3*
+
+        sigmaSurf: list of sigmas to use in *imridgelikl*
+
+        locStatsRad: list of radii to use in *localstats3*
+
+        justfeatnames: True or False; if to output just feature names
+        (this is useful to allocate memory in certain machine learning tasks)
+
+    *output:*
+        stack of features, indexed by last dimension
+        if justfeatnames = False; otherwise just feature names
+    """
+
     if type(sigmaDeriv) is not list:
         sigmaDeriv = [sigmaDeriv]
     if type(sigmaLoG) is not list:
@@ -1010,12 +1149,32 @@ def imfeatures3(I=[],sigmaDeriv=2,sigmaLoG=2,sigmaSurf=[],locStatsRad=0,justfeat
     return F
 
 def stack2list(S):
+    """
+    turns a stack of planes into a list of planes
+
+    *input:*
+        S: stack of planes; assumes they are indexed by last dimension
+
+    *output:*
+        list of planes
+    """
+
     L = []
     for i in range(size(S)[2]):
         L.append(S[:,:,i])
     return L
 
 def list2stack(l):
+    """
+    stacks a list of planes
+
+    *input:*
+        l: list of planes
+
+    *output:*
+        stack, with planes indexed by the first dimension
+    """
+
     n = len(l)
     nr = l[0].shape[0]
     nc = l[0].shape[1]
@@ -1025,11 +1184,41 @@ def list2stack(l):
     return S
 
 def thrsegment(I,wsBlr,wsThr): # basic threshold segmentation
+    """
+    basic threshold segmentation
+
+    *inputs:*
+        I: image
+
+        wsBlr: blur parameter, between 0 and 1; 0 implies a gaussian filtering
+        with sigma 1, 1 implies a gaussian filtering with sigma 5
+
+        wsThr: threshold parameter, between 0 and 1
+
+    *output:*
+        binary threholded image
+    """
+
     G = imgaussfilt(I,sigma=(1-wsBlr)+wsBlr*5) # min 1, max 5
     M = G > wsThr
     return M
 
 def circleKernel(radius,sigma,ftype):
+    """
+    circular kernel for circular shape detection
+
+    *inputs:*
+        radius: radius of circle
+
+        sigma: sigma of gaussian or LoG kernel (see ftype parameter)
+
+        ftype: 'log' or 'gauss'; use 'log' for kernel appropriate for 'empty circle' detection;
+        use 'gauss' for kernel apropriate for 'full circle' detection
+
+    *output:*
+        kernel
+    """
+
     pi = np.pi
         
     hks = np.max([1,np.ceil(radius+4*sigma)]).astype(int)
@@ -1061,6 +1250,20 @@ def circleKernel(radius,sigma,ftype):
     return S
 
 def morletKernel(stretch,scale,orientation):
+    """
+    morlet wavelet kernel
+
+    *inputs:*
+        stretch: stretch (elongation) parameter
+
+        scale: scale parameter
+
+        orientation: orientation parameter (in degrees)
+
+    *outputs:*
+        mr, mi: the real and imaginary parts of the kernel, respectively
+    """
+
     # orientation (in radians)
     theta = -(orientation-90)/360*2*np.pi
 
@@ -1102,12 +1305,54 @@ def morletKernel(stretch,scale,orientation):
     return mr, mi
 
 def conv2(I,K,m):
-    return convolve(I, K, mode=m) # m = 'full','valid','same'
+    """
+    2D convolution
+
+    *inputs:*
+        I: 2D image
+
+        K: 2D kernel
+
+        m: mode ('full', 'valid', 'same')
+
+    *output:*
+        convolved image
+    """
+
+    return convolve(I, K, mode=m)
 
 def conv3(I,K,m):
-    return convolve(I, K, mode=m) # m = 'full','valid','same'    
+    """
+    3D convolution
+
+    *inputs:*
+        I: 3D image
+
+        K: 3D kernel
+
+        m: mode ('full', 'valid', 'same')
+
+    *output:*
+        convolved image
+    """
+
+    return convolve(I, K, mode=m)
 
 def centerCrop(I,nr,nc):
+    """
+    crops center portion of 2D, single channel image
+
+    *inputs:*
+        I: image
+
+        nr: number of rows of output crop
+
+        nr: number of columns of output crop
+
+    *output:*
+        crop
+    """
+
     nrI = I.shape[0]
     ncI = I.shape[1]
     r0 = int(nrI/2)
@@ -1117,6 +1362,20 @@ def centerCrop(I,nr,nc):
     return I[r0-nr2:r0+nr2,c0-nc2:c0+nc2]
 
 def centerCropMultChan(I,nr,nc):
+    """
+    crops center portion of 2D, multi channel image; assumes channels are on 1sd dimension
+
+    *inputs:*
+        I: image
+
+        nr: number of rows of output crop
+
+        nr: number of columns of output crop
+
+    *output:*
+        crop
+    """
+
     nrI = I.shape[1]
     ncI = I.shape[2]
     r0 = int(nrI/2)
@@ -1126,11 +1385,40 @@ def centerCropMultChan(I,nr,nc):
     return I[:,r0-nr2:r0+nr2,c0-nc2:c0+nc2]
 
 def pad(I,k):
+    """
+    pads image with zeros
+
+    *inputs:*
+        I: 2D, single channel image
+
+        k: ammount to pad at each border
+
+    *output:*
+        padded image
+    """
+
     J = np.zeros((I.shape[0]+2*k,I.shape[1]+2*k))
     J[k:-k,k:-k] = I
     return J
 
 def fullPatchCoordinates2D(nr,nc,patchSize):
+    """
+    patch coordinates of a 2D image split without overlap
+
+    *inputs:*
+        nr: number of image rows
+
+        nc: number of image columns
+
+        patchSize: size of each side of a square patch
+
+    *output:*
+        list of patch coordinates [[row0, row1, col0, col1], ...]
+
+    *note:*
+        assumes nr and nc are multiples of patchSize
+    """
+
     npr = int(np.floor(nr/patchSize)) # number of patch rows
     npc = int(np.floor(nc/patchSize)) # number of patch cols
     fpc = []
@@ -1144,6 +1432,25 @@ def fullPatchCoordinates2D(nr,nc,patchSize):
     return fpc
 
 def fullPatchCoordinates3D(nz,nr,nc,patchSize):
+    """
+    patch coordinates of a 3D image split without overlap
+
+    *inputs:*
+        nz: number of image planes
+
+        nr: number of image rows
+
+        nc: number of image columns
+
+        patchSize: size of each side of a cubic patch
+
+    *output:*
+        list of patch coordinates [[pln0, pln1, row0, row1, col0, col1], ...]
+
+    *note:*
+        assumes nz, nr, nc are multiples of patchSize
+    """
+
     npz = int(np.floor(nz/patchSize)) # number of patch plns
     npr = int(np.floor(nr/patchSize)) # number of patch rows
     npc = int(np.floor(nc/patchSize)) # number of patch cols
@@ -1161,6 +1468,16 @@ def fullPatchCoordinates3D(nz,nr,nc,patchSize):
     return fpc
 
 def stack2Mosaic(S):
+    """
+    builds mosaic from a stack of 2D images
+
+    *input:*
+        S: stack; assumes planes are indexed by first coordinate
+
+    *output:*
+        mosaic, of type uint8, regardless of input type
+    """
+
     s = [S.shape[1],S.shape[2]] # '0' assumed to be plane coordinate
     k = int(np.ceil(np.sqrt(S.shape[0])))
     M = np.uint8(np.zeros((k*s[0],k*s[1])))
@@ -1172,6 +1489,20 @@ def stack2Mosaic(S):
     return M
 
 def changeViewPlane(I,currentViewPlane,newViewPlane):
+    """
+    changes view plane of 3D image, via numpy's *moveaxis* function
+
+    *inputs:*
+        I: 3D image
+
+        currentViewPlane: 'x', 'y' or 'z'; current view plane
+
+        newViewPlane: 'x', 'y', or 'z'; output view plane
+
+    *output:*
+        3D image with moved view plane
+    """
+
     if currentViewPlane == 'z':
         if newViewPlane == 'x':
             return np.moveaxis(I,[2,0,1],[0,1,2])
@@ -1195,6 +1526,16 @@ def changeViewPlane(I,currentViewPlane,newViewPlane):
             return I
 
 def logKernel3D(sigma):
+    """
+    laplacian of gaussian 3D kernel
+
+    *input:*
+        sigma: kernel sigma parameter
+
+    *output:*
+        3D kernel
+    """
+
     d = 4*sigma;
     domain = np.arange(-d,d+1)
     [x,y,z] = np.meshgrid(domain,domain,domain)
@@ -1211,6 +1552,21 @@ def logKernel3D(sigma):
     return L
 
 def surfaceKernels(sigma,radius=None,quantity=3):
+    """
+    kernels for 3D surface detection
+
+    *inputs:*
+        sigma: sigma of kernels
+
+        radius: controls size of kernel, which is 2*(radius + 2*sigma)+1; 
+        if radius = None, it's replaced with radius = 4*sigma
+
+        quantity: number of surface kernels; options are 3, 4, 6, 10
+
+    *output:*
+        list of surface kernels
+    """
+
     if radius is None:
         radius = 4*sigma
     if quantity == 3:
@@ -1252,6 +1608,18 @@ def surfaceKernels(sigma,radius=None,quantity=3):
     return Ks
 
 def imridgelikl(I,sigma): # see imgradmag for 'edge likelihood'
+    """
+    highlights ridges in 2D or 3D image
+
+    *inputs:*
+        I: image, 2D or 3D
+
+        sigma: scale of ridges
+
+    *output:*
+        ridge likelihood image
+    """
+
     if len(I.shape) == 2:
         # kx, _ = morletKernel(0,sigma,90)
         # ky, _ = morletKernel(0,sigma,0)
@@ -1321,9 +1689,25 @@ def imridgelikl(I,sigma): # see imgradmag for 'edge likelihood'
         return np.max(W,axis=3)
 
 def findSpots2D(I,sigma,thr=0.5):
-    # I: double, range [0,1] image
-    # sigma: sigma of spot (should be integer 1,2,3,...)
-    # thr: correlation selection threshold
+    """
+    finds spots in 2D image
+
+    *inputs:*
+        I: 2D image; should be double, in range [0, 1]
+
+        sigma: scale of spots; should be an integer: 1, 2, 3, ...
+
+        thr: correlation threshold for spot selection; should be in range (0, 1), where 1
+        means identically correlated to 'ideal' spot
+
+    *outputs:*
+        psList: list of candidate spots
+
+        sPsList: list of selected spots
+
+        I3: RGB image visualizing candidate and selected spots
+    """
+
     sigma = int(sigma)
 
     J = imlogfilt(I,sigma)
@@ -1370,9 +1754,25 @@ def findSpots2D(I,sigma,thr=0.5):
     return psList, sPsList, I3
 
 def findSpots3D(I,sigma,thr=0.5):
-    # I: double, range [0,1] image
-    # sigma: sigma of spot (should be integer 1,2,3,...)
-    # thr: correlation selection threshold
+    """
+    finds spots in 3D image
+
+    *inputs:*
+        I: 3D image; should be double, in range [0, 1]
+
+        sigma: scale of spots; should be an integer: 1, 2, 3, ...
+
+        thr: correlation threshold for spot selection; should be in range (0, 1), where 1
+        means identically correlated to 'ideal' spot
+
+    *outputs:*
+        psList: list of candidate spots
+
+        sPsList: list of selected spots
+
+        S: 3D image visualizing selected spots
+    """
+
     sigma = int(sigma)
 
     J = imlogfilt(I,sigma)
@@ -1415,6 +1815,20 @@ def findSpots3D(I,sigma,thr=0.5):
     return psList, sPsList, S
 
 def planes2rgb(R=None,G=None,B=None):
+    """
+    makes an RGB image out of 2D planes
+
+    *inputs*:
+        R: 'red' image plane
+
+        G: 'green' image plane
+
+        B: 'blue' image plane
+
+    *ouput:*
+        RGB image
+    """
+
     if R is not None:
         nr,nc = R.shape
         dtype = R.dtype
@@ -1436,6 +1850,16 @@ def planes2rgb(R=None,G=None,B=None):
     return RGB
 
 def imbinarize(I):
+    """
+    applies otsu threshold
+
+    *input:*
+        I: image
+
+    *output:*
+        binary thresholded image
+    """
+
     return np.double(I > threshold_otsu(I))
 
 def bwInterpSingleObjectMasks(I, J, a):
@@ -1511,6 +1935,23 @@ def bwInterpSingleObjectMasks(I, J, a):
     return K > 0
 
 def interpolateAnnotations3D(A, classIdx):
+    """
+    interpolates plane annotations on 3D images
+
+    *inputs:*
+        A: annotation image
+
+        classIdx: index of class to interpolate
+
+    *output:*
+        image with interpolated anotations\
+
+    *note:*
+        this function uses bwInterpSingleObjectMasks to 'fill in' planes in between
+        those which have been annotated with label *classIdx*; it assumes
+        annotations on each plane correspond to a single closed contour
+    """
+
     A2 = np.copy(A)
 
     i_list = []
