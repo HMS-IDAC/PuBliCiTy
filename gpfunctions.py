@@ -1092,14 +1092,14 @@ def imfeatures(I=[],sigmaDeriv=1,sigmaLoG=1,locStatsRad=0,justfeatnames=False):
 
 def imfeatures3(I=[],sigmaDeriv=2,sigmaLoG=2,sigmaSurf=[],locStatsRad=0,justfeatnames=False):
     """
-    computes 3D image features based on *imderivatives3*, *imlogfilt3*, and *localstats3*
+    computes 3D image features based on *imderivatives3*, *imlogfilt*, and *localstats3*
 
     *inputs:*
         I: 3D image, or empty list [] (which is convenient when justfeatnames=True)
 
         sigmaDeriv: list of sigmas to pass on to *imderivatives3*
 
-        sigmaLoG: list of sigmas to use in *imlogfilt3*
+        sigmaLoG: list of sigmas to use in *imlogfilt*
 
         sigmaSurf: list of sigmas to use in *imridgelikl*
 

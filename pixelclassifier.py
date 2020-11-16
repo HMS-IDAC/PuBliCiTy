@@ -35,6 +35,29 @@ import matplotlib.pyplot as plt
 import time
 
 def parseLabelFolder(trainPath):
+    """
+    parses a folder of training data to return images, labels and metadata
+
+    *input:*
+        trainPath: full path to folder containing training images and labels;
+        note that each pair (image, label) should have the same name except for
+        the last 8 characters, which should be '_Img.tif' and '_Ant.tif', respectively;
+        a label is assumed to be an image of same size as the pairing image, of type
+        uint8, where class 1 corresponds to pixels of intensity 1, class 2 to pixels
+        of intensity 2, and so on; if there's only one class, the function
+        assumes the complement is class 2, and randomly samples it so that the number
+        of pixels from class 1 and 2 are the same withing a label (annotation) image
+
+    *outputs:*
+        nClasses: number of classes
+
+        nSamples: total number of annotated pixels
+
+        imList: list of images
+
+        lbList: list of labels
+    """
+
     imPathList = listfiles(trainPath,'_Img.tif')
 
     imPath = imPathList[0]
@@ -91,6 +114,33 @@ def parseLabelFolder(trainPath):
     return nClasses, nSamples, imList, lbList
 
 def setupTraining(nClasses,nSamples,imList,lbList,sigmaDeriv=2,sigmaLoG=[],locStatsRad=0):
+    """
+    re-formats training data for training
+
+    *inputs:*
+        nClasses: number of classes
+
+        nSamples: number of annotated pixels
+
+        imList: list of images
+
+        lbList: list of labels (annotations)
+
+        sigmaDeriv: sigma, or list of sigmas, for derivative features (computed via gpfunctions.imderivatives)
+
+        sigmaLoG: sigma, or list of sigmas, for laplacian-of-gaussian features (computed via gpfunctions.imlogfilt)
+
+        locStatRad: radius for local percentiles (computed via gpfunctions.localstats)
+
+    *outputs:*
+        X: a matrix of nSamples x nFeatures containing image features
+
+        Y: a matrix of nSamples x 1 containing labels
+
+        metaDataDict: a dictionary with the following keys: nClasses, nFeatures (number of features),
+        featNames (list of feature names), sigmaDeriv, sigmaLoG, locStatRad
+    """
+
     featNames = imfeatures(sigmaDeriv=sigmaDeriv,sigmaLoG=sigmaLoG,locStatsRad=locStatsRad,justfeatnames=True)
     nFeatures = len(featNames)
     X = np.zeros((nSamples,nFeatures))
@@ -120,6 +170,22 @@ def setupTraining(nClasses,nSamples,imList,lbList,sigmaDeriv=2,sigmaLoG=[],locSt
                   'locStatsRad': locStatsRad}
 
 def rfcTrain(X,Y,params):
+    """
+    random forest classifier trainer
+
+    *inputs:*
+        X: a matrix of nSamples x nFeatures containing image features
+
+        Y: a matrix of nSamples x 1 containing labels
+
+        params: a dictionary of parameters, as in metaDataDict returned by setupTraining
+
+    *output:*
+        model: a dictionary containing the keys, values from params, in addicion to
+        key 'rfc' paired with the random forest models, and key 'featImport' paired
+        with feature importances (which can be used in plotFeatImport)
+    """
+
     rfc = RandomForestClassifier(n_estimators=100,n_jobs=-1,min_samples_leaf=50)
     rfc = rfc.fit(X, Y)
     model = params
@@ -128,6 +194,18 @@ def rfcTrain(X,Y,params):
     return model
 
 def train(trainPath,**kwargs):
+    """
+    classifier training function
+
+    *inputs:*
+        trainPath: path to folder contining images and labels (annotations)
+
+        kwargs: extra optional parameters passed to setupTraining: sigmaDeriv, sigmaLoG, locStatsRad
+
+    *output:*
+        model: same as the output of rfcTrain
+    """
+
     print('training...')
     startTime = time.time()
     nClasses, nSamples, imList, lbList = parseLabelFolder(trainPath)
@@ -138,6 +216,22 @@ def train(trainPath,**kwargs):
     return model
 
 def classify(I,model,output='classes'):
+    """
+    classifies pixels given an image and a trained model
+
+    *inputs:*
+        I: image
+
+        model: trained model
+
+        output: either 'classes' or 'probmaps'; if 'classes', the output is a stack of planes
+        containing masks for each class; if 'probmaps', the output is a stack of planes containing
+        probabilities (numbers between 0 and 1) for pixels to belong to that class
+
+    *output:*
+        stack of masks or probability maps, depending on if output='classes' or output='probmaps'
+    """
+
     print('classifying...')
     startTime = time.time()
     rfc = model['rfc']
@@ -158,6 +252,20 @@ def classify(I,model,output='classes'):
     return M
 
 def plotFeatImport(fi,fn):
+    """
+    plots feature importances
+
+    *inputs:*
+        fi: list of feature importances; these can be accessed from the model (output of train)
+        via model['featImport']
+
+        fn: list of feature names; these can be accessed from the model (output of train)
+        via model['featNames']
+
+    *output:*
+        (none; a plot will be displayed)
+    """
+
     plt.rcdefaults()
     fig, ax = plt.subplots()
     fig.set_size_inches(20, 5)
