@@ -1,5 +1,31 @@
 """
 2D semantic segmentation
+
+*demo:*
+::
+
+    import pixelclassifier as pc
+    from gpfunctions import *
+    import os
+
+    # -------------------------
+    # train
+
+    trainPath = os.path.abspath('DataForPC/Train')
+    model = pc.train(trainPath,sigmaDeriv=[2,4,8,16],sigmaLoG=[2,4,8,16])
+
+    pc.plotFeatImport(model['featImport'],model['featNames'])
+
+    # -------------------------
+    # segment
+
+    path = os.path.abspath('DataForPC/Train/I00000_Img.tif')
+    I = im2double(tifread(path))
+
+    C = pc.classify(I,model,output='classes')
+    P = pc.classify(I,model,output='probmaps')
+
+    imshowlist([I]+stack2list(C)+stack2list(P))
 """
 
 from gpfunctions import *
