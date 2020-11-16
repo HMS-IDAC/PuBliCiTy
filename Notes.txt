@@ -4,6 +4,7 @@ Dependencies:
 	pip install tifffile
 	conda install scikit-image
 	pip install joblib
+	pip install scikit-learn
 
 
 Building documentation:

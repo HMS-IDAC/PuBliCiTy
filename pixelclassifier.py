@@ -143,13 +143,25 @@ def plotFeatImport(fi,fn):
     ax.set_title('Feature Importance')
     plt.show()
 
-def demo():
-    trainPath = 'TrainingData'
-    model = train(trainPath,sigmaDeriv=[2,4],sigmaLoG=[2],locStatsRad=2)
+if __name__ == "__main__":
+    from gpfunctions import *
+    import os
+    
+    # -------------------------
+    # train
+
+    trainPath = os.path.abspath('DataForPC/Train')
+    model = train(trainPath,sigmaDeriv=[2,4,8,16],sigmaLoG=[2,4,8,16])
+
     plotFeatImport(model['featImport'],model['featNames'])
 
-    path = 'Image.tif'
+    # -------------------------
+    # segment
+
+    path = os.path.abspath('DataForPC/Train/I00000_Img.tif')
     I = im2double(tifread(path))
+
     C = classify(I,model,output='classes')
     P = classify(I,model,output='probmaps')
+
     imshowlist([I]+stack2list(C)+stack2list(P))
