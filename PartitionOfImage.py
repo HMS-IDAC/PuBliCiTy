@@ -6,6 +6,39 @@ import numpy as np
 from gpfunctions import *
 
 class PI2D:
+    """
+    PartitionOfImage 2D
+
+    *demo:*
+    ::
+
+        from PartitionOfImage import PI2D
+        import numpy as np
+        from gpfunctions import *
+
+        I = np.random.rand(128,128)
+        PI2D.setup(I,64,4,'accumulate')
+
+        nChannels = 2
+        PI2D.createOutput(nChannels)
+
+        for i in range(PI2D.NumPatches):
+            P = PI2D.getPatch(i)
+            Q = np.zeros((nChannels,P.shape[0],P.shape[1]))
+            for j in range(nChannels):
+                Q[j,:,:] = P
+            PI2D.patchOutput(i,Q)
+
+        J = PI2D.getValidOutput()
+        J = J[0,:,:]
+
+        D = np.abs(I-J)
+        print(np.max(D))
+
+        K = cat(1,cat(1,I,J),D)
+        imshow(K)
+    """
+
     Image = None
     PaddedImage = None
     PatchSize = 128
@@ -23,6 +56,23 @@ class PI2D:
     W = None
 
     def setup(image,patchSize,margin,mode):
+        """
+        initialize PI2D
+
+        *inputs:*
+            image: 2D image to partition; if the image nas more than 1 channel,
+            the channel dimension is assumed to be the 1st
+
+            patchSize: size of square patch (tile)
+
+            margin: half the amount of overlap between adjacent patches; margin should be
+            an integer greater than 0 and smaller than patchSize
+
+            mode: 'replace' or 'accumulate'; if 'replace', tiling overwrites
+            pixel values whenever there's overlap; if 'accumulate', overlapping
+            regions are interpolated during tiling, minimizing border artifacts
+        """
+
         PI2D.Image = image
         PI2D.PatchSize = patchSize
         PI2D.Margin = margin
@@ -77,6 +127,10 @@ class PI2D:
         PI2D.Mode = mode # 'replace' or 'accumulate'
 
     def getPatch(i):
+        """
+        returns the i-th patch for processing
+        """
+
         r0,r1,c0,c1 = PI2D.PC[i]
         if len(PI2D.PaddedImage.shape) == 2:
             return PI2D.PaddedImage[r0:r1,c0:c1]
@@ -84,6 +138,10 @@ class PI2D:
             return PI2D.PaddedImage[:,r0:r1,c0:c1]
 
     def createOutput(nChannels):
+        """
+        creates output image to store results of tile processing
+        """
+
         if nChannels == 1:
             PI2D.Output = np.zeros((PI2D.NRPI,PI2D.NCPI))
         else:
@@ -92,6 +150,10 @@ class PI2D:
             PI2D.Count = np.zeros((PI2D.NRPI,PI2D.NCPI))
 
     def patchOutput(i,P):
+        """
+        adds result P of i-th tile processing to the output image
+        """
+
         r0,r1,c0,c1 = PI2D.PC[i]
         if PI2D.Mode == 'accumulate':
             PI2D.Count[r0:r1,c0:c1] += PI2D.W
@@ -108,6 +170,11 @@ class PI2D:
                 PI2D.Output[:,r0:r1,c0:c1] = P
 
     def getValidOutput():
+        """
+        recovers output without temporary padding added to manage tiling;
+        thus the output has the same size as the input
+        """
+
         margin = PI2D.Margin
         nr, nc = PI2D.NR, PI2D.NC
         if PI2D.Mode == 'accumulate':
@@ -126,8 +193,7 @@ class PI2D:
 
     def demo():
         I = np.random.rand(128,128)
-        # PI2D.setup(I,128,14)
-        PI2D.setup(I,64,4,'replace')
+        PI2D.setup(I,64,4,'accumulate')
 
         nChannels = 2
         PI2D.createOutput(nChannels)
@@ -150,6 +216,43 @@ class PI2D:
 
 
 class PI3D:
+    """
+    PartitionOfImage 3D
+
+    *demo:*
+    ::
+
+        from PartitionOfImage import PI3D
+        import numpy as np
+        from gpfunctions import *
+
+        I = np.random.rand(128,128,128)
+        PI3D.setup(I,64,4,'accumulate')
+
+        nChannels = 2
+        PI3D.createOutput(nChannels)
+
+        for i in range(PI3D.NumPatches):
+            P = PI3D.getPatch(i)
+            Q = np.zeros((P.shape[0],nChannels,P.shape[1],P.shape[2]))
+            for j in range(nChannels):
+                Q[:,j,:,:] = P
+            PI3D.patchOutput(i,Q)
+
+        J = PI3D.getValidOutput()
+        J = J[:,0,:,:]
+
+        D = np.abs(I-J)
+        print(np.max(D))
+
+        pI = I[64,:,:]
+        pJ = J[64,:,:]
+        pD = D[64,:,:]
+
+        K = cat(1,cat(1,pI,pJ),pD)
+        imshow(K)
+    """
+
     Image = None
     PaddedImage = None
     PatchSize = 128
@@ -169,6 +272,24 @@ class PI3D:
     W = None
 
     def setup(image,patchSize,margin,mode):
+        """
+        initialize PI3D
+
+        *inputs:*
+            image: 3D image to partition; if the image nas more than 1 channel,
+            the channel dimension is assumed to be the 2nd, i.e. dimensions are:
+            planes, channels, rows, columns
+
+            patchSize: size of cubic patch (tile)
+
+            margin: half the amount of overlap between adjacent patches; margin should be
+            an integer greater than 0 and smaller than patchSize
+
+            mode: 'replace' or 'accumulate'; if 'replace', tiling overwrites
+            voxel values whenever there's overlap; if 'accumulate', overlapping
+            regions are interpolated during tiling, minimizing border artifacts
+        """
+
         PI3D.Image = image
         PI3D.PatchSize = patchSize
         PI3D.Margin = margin
@@ -231,6 +352,10 @@ class PI3D:
         PI3D.Mode = mode # 'replace' or 'accumulate'
 
     def getPatch(i):
+        """
+        returns the i-th patch for processing
+        """
+
         z0,z1,r0,r1,c0,c1 = PI3D.PC[i]
         if len(PI3D.PaddedImage.shape) == 3:
             return PI3D.PaddedImage[z0:z1,r0:r1,c0:c1]
@@ -238,6 +363,10 @@ class PI3D:
             return PI3D.PaddedImage[z0:z1,:,r0:r1,c0:c1]
 
     def createOutput(nChannels):
+        """
+        creates output image to store results of tile processing
+        """
+
         if nChannels == 1:
             PI3D.Output = np.zeros((PI3D.NZPI,PI3D.NRPI,PI3D.NCPI))
         else:
@@ -246,6 +375,10 @@ class PI3D:
             PI3D.Count = np.zeros((PI3D.NZPI,PI3D.NRPI,PI3D.NCPI))
 
     def patchOutput(i,P):
+        """
+        adds result P of i-th tile processing to the output image
+        """
+
         z0,z1,r0,r1,c0,c1 = PI3D.PC[i]
         if PI3D.Mode == 'accumulate':
             PI3D.Count[z0:z1,r0:r1,c0:c1] += PI3D.W
@@ -262,6 +395,11 @@ class PI3D:
                 PI3D.Output[z0:z1,:,r0:r1,c0:c1] = P
 
     def getValidOutput():
+        """
+        recovers output without temporary padding added to manage tiling;
+        thus the output has the same size as the input
+        """
+
         margin = PI3D.Margin
         nz, nr, nc = PI3D.NZ, PI3D.NR, PI3D.NC
         if PI3D.Mode == 'accumulate':
