@@ -1972,3 +1972,42 @@ def interpolateAnnotations3D(A, classIdx):
             A2[j,:,:] = classIdx*np.uint8(M)
 
     return A2
+
+def splitIntoTiles2D(pathIn, pathOut):
+    """
+    splits images/annotations into tiles for unet2D model training
+
+    *inputs:*
+        pathIn: input folder path; expects folder containing a list of pairs (image, annotation)
+        where each pair is named following the pattern 'rootname_Img.tif', 'rootname_Ant.tif';
+        _Img.tif is expected to be a single-channel 2D image; _Ant.tif is expected to be
+        uint8, where pixels labeled 1, 2, 3, etc correspond to class 1, 2, 3, etc, respectively
+
+        pathOut: output folder path; the function will get patches of size 60x60 every 20 pixels
+        in each dimension, re-index them, and write to the output folder; patches where there
+        are no labeled pixels (all pixels from _Ant.tif in that patch are 0) will be discarded
+    """
+
+    l_I = listfiles(pathIn, '_Img.tif')
+    l_A = listfiles(pathIn, '_Ant.tif')
+
+    count = -1
+    for index in range(len(l_I)):
+        I = tifread(l_I[index])
+        A = tifread(l_A[index])
+
+        for i in range(0, A.shape[0]-60, 20):
+            for j in range(0, A.shape[1]-60, 20):
+                block_A = np.copy(A[i:i+60, j:j+60])
+                block_A_crop = np.copy(block_A[20:40, 20:40])
+                mask_block_A_crop = block_A_crop > 0
+                if np.any(mask_block_A_crop):
+                    count += 1
+                    print('index', index, '| block:', count, '| # labels:', np.sum(mask_block_A_crop))
+
+                    block_A[:] = 0
+                    block_A[20:40, 20:40] = block_A_crop
+                    tifwrite(block_A, pathjoin(pathOut, 'I%05d_Ant.tif' % count))
+
+                    block_I = np.copy(I[i:i+60, j:j+60])
+                    tifwrite(block_I, pathjoin(pathOut, 'I%05d_Img.tif' % count))
