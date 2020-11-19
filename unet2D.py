@@ -1,6 +1,6 @@
-restoreVariables = False
-train = True
-test = False
+restoreVariables = True
+train = False
+test = True
 deploy = False
 
 deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
@@ -20,13 +20,14 @@ reSplitTrainSet = True
 trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit.data'
 
 logDir = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D'
+logPath = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D_TestSample.tif'
 
 imPath = '/home/cicconet/Development/PuBliCiTy/DataForPC/Train_60'
-imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test_60'
+imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test'
 
 nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
 
-learningRate = 0.001
+learningRate = 0.00001
 
 nEpochs = 20
 
@@ -166,33 +167,6 @@ y = Cropping2D(toCrop)(y0)
 cropSize = y.shape[1]
 
 
-# https://www.jeremyjordan.me/semantic-segmentation/
-# https://arxiv.org/pdf/1606.04797.pdf
-
-# iClass = 0
-# yC0 = tf.slice(y,[0,0,0,iClass],[-1,-1,-1,1])
-# smC0 = tf.slice(sm,[0,0,0,iClass],[-1,-1,-1,1])
-# itsc = tf.multiply(yC0,smC0)
-# numEl_itsc = tf.reduce_sum(itsc,axis=[1,2,3])
-# numEl_yC0 = tf.reduce_sum(tf.square(yC0),axis=[1,2,3])
-# numEl_smC0 = tf.reduce_sum(tf.square(smC0),axis=[1,2,3])
-# diceCoeff = 2*tf.divide(numEl_itsc,numEl_yC0+numEl_smC0)
-# diceLoss0 = tf.reduce_mean(1-diceCoeff)
-
-# iClass = 1
-# yC0 = tf.slice(y,[0,0,0,iClass],[-1,-1,-1,1])
-# smC0 = tf.slice(sm,[0,0,0,iClass],[-1,-1,-1,1])
-# itsc = tf.multiply(yC0,smC0)
-# numEl_itsc = tf.reduce_sum(itsc,axis=[1,2,3])
-# numEl_yC0 = tf.reduce_sum(tf.square(yC0),axis=[1,2,3])
-# numEl_smC0 = tf.reduce_sum(tf.square(smC0),axis=[1,2,3])
-# diceCoeff = 2*tf.divide(numEl_itsc,numEl_yC0+numEl_smC0)
-# diceLoss1 = tf.reduce_mean(1-diceCoeff)
-
-
-# diceLoss = (diceLoss0+diceLoss1)/2
-
-
 l = []
 # nl = []
 for iClass in range(nClasses):
@@ -240,32 +214,39 @@ def testOnImage(index,bnFlag):
     # margin = 44
     PI2D.setup(V,imSize,margin)
     PI2D.createOutput(nClasses)
-    nImages = PI2D.NumPatches
+    nPatches = PI2D.NumPatches
 
     x_batch = np.zeros((batchSize,imSize,imSize,nChannels))
 
-    print('test on image',index,'bn',bnFlag)
-    for i in range(nImages):
+    print('test on image',index)
+    for i in range(nPatches):
         P = PI2D.getPatch(i)
         
         j = np.mod(i,batchSize)
-        for k in range(nChannels):
-            x_batch[j,:,:,k] = P[k,:,:]
+        if nChannels == 1:
+            x_batch[j,:,:,0] = P
+        else:
+            for k in range(nChannels):
+                x_batch[j,:,:,k] = P[k,:,:]
         
-        if j == batchSize-1 or i == nImages-1:
+        if j == batchSize-1 or i == nPatches-1:
             output = sess.run(sm,feed_dict={x: x_batch, t: bnFlag})
             for k in range(j+1):
                 PI2D.patchOutput(i-j+k,np.moveaxis(output[k,:,:,0:nClasses],[2,0,1],[0,1,2]))
 
-    # PM = PI2D.Output
-    # PM0 = PM[0,margin:-margin,margin:-margin]
-    # PM1 = PM[1,margin:-margin,margin:-margin]
+    PM = PI2D.Output
+    if nChannels == 1:
+        W = V[margin:-margin,margin:-margin]
+    else:
+        W = np.mean(V[:,margin:-margin,margin:-margin],axis=0)
 
-    # V0 = normalize(V[1,margin:-margin,margin:-margin])
-    # C = np.concatenate((V0,PM0),axis=1)
-    # C = np.concatenate((C,PM1),axis=1)
+    W = normalize(W)
 
-    # return np.uint8(255*C)
+    for i in range(PM.shape[0]):
+        PMi = PM[i,margin:-margin,margin:-margin]
+        W = np.concatenate((W, PMi), axis=1)
+
+    return np.uint8(255*W)
 
 if train:
     ma = 0.5
@@ -290,11 +271,10 @@ if train:
                 break
 
             if i % 100 == 0:
-                # imIndex = np.random.randint(nImagesTest)
-                # outBN0 = testOnImage(imIndex,False)
+                imIndex = np.random.randint(nImagesTest)
+                pred = testOnImage(imIndex,False)
 
-                # tifwrite(outBN0,'/scratch/Gunes/Scratch.tif')
-
+                tifwrite(pred, logPath)
 
                 if a > 0.7:
                     saver.save(sess, modelPathOut)
@@ -303,21 +283,11 @@ if train:
     writer.close()
     writer2.close()
 
-sys.exit(0)
+if test:
+    for imIndex in range(nImagesTest):
+        pred = testOnImage(imIndex,False)
+        tifwrite(pred, pathjoin(imPathTest, 'Pred_I%05d.tif' % imIndex))
 
-from PIL import Image
-def blendRGBImages(image1,image2):  
-    image1 = Image.fromarray(image1)
-    image2 = Image.fromarray(image2)
-
-    image1 = image1.convert('RGBA')
-    image2 = image2.convert('RGBA')
-
-    blended = Image.blend(image1, image2, alpha=0.5)
-
-    return np.array(blended)
-
-deploy = True
 if deploy:
     for imIndex in range(13):
         p = '/home/mc457/files/CellBiology/IDAC/Marcelo/Hotamisligil/Parlakgul/EM3D/Planes4Annotation/All3C3_Img/I%05d_Img.tif' % imIndex
