@@ -1,12 +1,22 @@
+"""
+    pixel classifier via convolutional neural networks (U-Net)
+
+    see *control panel* section of unet2D.py for instructions
+"""
+
+
+# ----------------------------------------------------------------------------------------------------
+# control panel
+
 restoreVariables = True
-train = False
-test = True
+train = True
+test = False
 deploy = False
 
-deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
-deployImagePathOut = '/home/cicconet/Download/I00000_PM.tif'
-deployFolderPathIn = ''
-deployFolderPathOut = ''
+deployImagePathIn = ''#'/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
+deployImagePathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_PMs.tif'
+deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In'
+deployFolderPathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_Out'
 
 imSize = 60
 nClasses = 3
@@ -31,7 +41,8 @@ learningRate = 0.00001
 
 nEpochs = 20
 
-
+# ----------------------------------------------------------------------------------------------------
+# machine room
 
 import numpy as np
 import os, shutil, sys
@@ -207,18 +218,15 @@ else:
     sess.run(tf.global_variables_initializer())
 
 
-def testOnImage(index,bnFlag):
-    V = im2double(tifread(pathjoin(imPathTest,'I%05d_Img.tif' % index)))
-
+def imageToProbMapsWithPI2D(I):
     margin = 20
     # margin = 44
-    PI2D.setup(V,imSize,margin)
+    PI2D.setup(I,imSize,margin)
     PI2D.createOutput(nClasses)
     nPatches = PI2D.NumPatches
 
     x_batch = np.zeros((batchSize,imSize,imSize,nChannels))
 
-    print('test on image',index)
     for i in range(nPatches):
         P = PI2D.getPatch(i)
         
@@ -230,23 +238,32 @@ def testOnImage(index,bnFlag):
                 x_batch[j,:,:,k] = P[k,:,:]
         
         if j == batchSize-1 or i == nPatches-1:
-            output = sess.run(sm,feed_dict={x: x_batch, t: bnFlag})
+            output = sess.run(sm,feed_dict={x: x_batch, t: False})
             for k in range(j+1):
                 PI2D.patchOutput(i-j+k,np.moveaxis(output[k,:,:,0:nClasses],[2,0,1],[0,1,2]))
 
-    PM = PI2D.Output
-    if nChannels == 1:
-        W = V[margin:-margin,margin:-margin]
-    else:
-        W = np.mean(V[:,margin:-margin,margin:-margin],axis=0)
+    return PI2D.Output
 
-    W = normalize(W)
+def testOnImage(index):
+    print('test on image',index)
+
+    I = im2double(tifread(pathjoin(imPathTest,'I%05d_Img.tif' % index)))
+    PM = imageToProbMapsWithPI2D(I)
+
+    if nChannels == 1:
+        J = I#[margin:-margin,margin:-margin]
+    else:
+        J = np.mean(I, axis=0)
+        # J = np.mean(I[:,margin:-margin,margin:-margin],axis=0)
+
+    J = normalize(J)
 
     for i in range(PM.shape[0]):
-        PMi = PM[i,margin:-margin,margin:-margin]
-        W = np.concatenate((W, PMi), axis=1)
+        PMi = PM[i,:,:]
+        # PMi = PM[i,margin:-margin,margin:-margin]
+        J = np.concatenate((J, PMi), axis=1)
 
-    return np.uint8(255*W)
+    return np.uint8(255*J)
 
 if train:
     ma = 0.5
@@ -272,7 +289,7 @@ if train:
 
             if i % 100 == 0:
                 imIndex = np.random.randint(nImagesTest)
-                pred = testOnImage(imIndex,False)
+                pred = testOnImage(imIndex)
 
                 tifwrite(pred, logPath)
 
@@ -285,68 +302,27 @@ if train:
 
 if test:
     for imIndex in range(nImagesTest):
-        pred = testOnImage(imIndex,False)
+        pred = testOnImage(imIndex)
         tifwrite(pred, pathjoin(imPathTest, 'Pred_I%05d.tif' % imIndex))
 
 if deploy:
-    for imIndex in range(13):
-        p = '/home/mc457/files/CellBiology/IDAC/Marcelo/Hotamisligil/Parlakgul/EM3D/Planes4Annotation/All3C3_Img/I%05d_Img.tif' % imIndex
+    if deployImagePathIn != '':
+        print('deploying on image...')
+        print(deployImagePathIn)
+        I = im2double(tifread(deployImagePathIn))
+        PM = imageToProbMapsWithPI2D(I)
+        PM = np.uint8(255*PM)
+        tifwrite(PM, deployImagePathOut)
 
-        V = im2double(tifread(p))
-        # V = (V-dsm)/dss
-
-        # margin = 20
-        margin = 44
-        PI2D.setup(V,imSize,margin)
-        PI2D.createOutput(3)
-        nImages = PI2D.NumPatches
-
-        x_batch = np.zeros((batchSize,imSize,imSize,nChannels))
-
-        for i in range(nImages):
-            print(imIndex,i,nImages)
-            P = PI2D.getPatch(i)
-            
-            j = np.mod(i,batchSize)
-            for k in range(nChannels):
-                x_batch[j,:,:,k] = P[k,:,:]
-            
-            if j == batchSize-1 or i == nImages-1:
-                output = sess.run(sm,feed_dict={x: x_batch, t: False})
-                for k in range(j+1):
-                    PI2D.patchOutput(i-j+k,np.moveaxis(output[k,:,:,0:3],[2,0,1],[0,1,2]))
-
-        PM = PI2D.Output
-        # PM0 = PM[0,margin:-margin,margin:-margin]
-        # PM1 = PM[1,margin:-margin,margin:-margin]
-        # V0 = normalize(V[1,margin:-margin,margin:-margin])
-
-        # PM0 = PM[0,:,:]
-        # PM1 = PM[1,:,:]
-        V0 = V[1,:,:]
-        tifwrite(255*np.uint8(V0),'/scratch/Gunes/Predict/I%05d_Im.tif' % imIndex)
-
-        A = np.argmax(PM,axis=0)
-        S = np.sum(PM,axis=0)
-        A[S == 0] = -1
-        for i in range(2):
-            tifwrite(255*np.uint8(A == i),'/scratch/Gunes/Predict/I%05d_P%d.tif' % (imIndex,i))
-
-        # C = np.zeros((V0.shape[0],V0.shape[1],3))
-        # C[:,:,0] = V0
-        # C[:,:,1] = V0
-        # C[:,:,2] = V0
-        # image1 = np.uint8(255*C)
-        # tifwrite(image1,'/scratch/Gunes/Predict/I%05d_Im.tif' % imIndex)
-
-        # C[:,:,0] = imgaussfilt(PM0,2)
-        # C[:,:,1] = imgaussfilt(PM1,2)
-        # C[:,:,2] = 0
-        # image2 = np.uint8(255*C)
-        # tifwrite(image2,'/scratch/Gunes/Predict/I%05d_PM.tif' % imIndex)
-
-        # B = blendRGBImages(image1,image2)
-        # tifwrite(B,'/scratch/Gunes/Predict/I%05d.tif' % imIndex)
+    if deployFolderPathIn != '':
+        imPathList = listfiles(deployFolderPathIn, '.tif')
+        for idx, item in enumerate(imPathList):
+            print('deploying on image %d of %d' % (idx+1, len(imPathList)))
+            I = im2double(tifread(item))
+            PM = imageToProbMapsWithPI2D(I)
+            PM = np.uint8(255*PM)
+            [_,name,ext] = fileparts(item)
+            tifwrite(PM, pathjoin(deployFolderPathOut, name+'_PMs'+ext))
 
 
 sess.close()

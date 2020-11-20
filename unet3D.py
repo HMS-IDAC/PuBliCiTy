@@ -1,145 +1,60 @@
-organelle = 'Mit' # 'ER', 'LD', 'Mit'
+"""
+    voxel classifier via convolutional neural networks (U-Net)
 
-if organelle == 'ER':
-    restoreVariables = True
-    train = False
-    test = False
-    deploy = True
-    
-    deployResolution = 'full'
-
-    deployImagePathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2.tif'
-    deployImagePathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2_ER_CropAndSegm.tif'
-    #deployFolderPathIn = ''#'E:/Jeeyun/FIB-SEM/110117_HPF_KO45min'
-    #deployFolderPathOut = ''#'E:/Jeeyun/FIB-SEM/AnalysisOutputs/KO45min/ER'
-    deployFolderPathIn = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
-    deployFolderPathOut = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_ER'
-
-    if deploy == True:
-        imSize = 120
-        batchSize = 8
-    if train == True or test == True:
-        imSize = 60
-        batchSize = 32
-
-    modelPathIn = 'E:/Jeeyun/FIB-SEM/Models/modelERVC.ckpt'
-    modelPathOut ='E:/Jeeyun/FIB-SEM/Models/modelERVC2.ckpt'
-
-    reSplitTrainSet = True
-    trainSetSplitPath = 'E:/Jeeyun/FIB-SEM/Models/modelERVC_Shuffle.data'
-
-    logDir = 'E:/Jeeyun/FIB-SEM/Logs/logERVC2'
-    logPath = 'E:/Jeeyun/FIB-SEM/Logs/imERVC2.png'
-    
-    imPath = 'E:/Jeeyun/FIB-SEM/TrainData/ER/TrainSet_60_Agg_CB'
-    imPathTest = 'E:/Jeeyun/FIB-SEM/TestData'
-
-    dsm = 0.6479827655767296
-    dss = 0.08869744364209528
-
-    maxBrig = 0.5
-    maxCont = 0.1
-    
-    nFeatMapsList = [64,32,64] # length should be 3 for input 60 to have output 20
-    
-    learningRate = 0.00001
-
-    nEpochs = 20
-    
-elif organelle == 'LD':
-    restoreVariables = True
-    train = False
-    test = False
-    deploy = True
-    
-    deployResolution = 'full'
-
-    deployImagePathIn = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1.tif'
-    deployImagePathOut = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_LD.tif'
-    deployFolderPathIn = 'E:/Jeeyun/FIB-SEM/110117_HPF_KO45min'
-    deployFolderPathOut = 'E:/Jeeyun/FIB-SEM/AnalysisOutputs/KO45min/LD'
-    #deployFolderPathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
-    #deployFolderPathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_LD'
-
-    if deploy == True:
-        imSize = 120
-        batchSize = 8
-    if train == True or test == True:
-        imSize = 60
-        batchSize = 32
-
-    modelPathIn = 'E:/Jeeyun/FIB-SEM/Models/modelLDVC.ckpt'
-    modelPathOut ='E:/Jeeyun/FIB-SEM/Models/modelLDVC2.ckpt'
-
-    reSplitTrainSet = True
-    trainSetSplitPath = 'E:/Jeeyun/FIB-SEM/Models/modelLDVC_Shuffle.data'
-
-    logDir = 'E:/Jeeyun/FIB-SEM/Logs/logLDVC2'
-    logPath = 'E:/Jeeyun/FIB-SEM/Logs/imLDVC2.png'
-    
-    imPath = 'E:/Jeeyun/FIB-SEM/TrainData/LD/TrainSet_60_Agg_CB'
-    imPathTest = 'E:/Jeeyun/FIB-SEM/TestData'
-
-    dsm = 0.68
-    dss = 0.09
-
-    maxBrig = 0.5
-    maxCont = 0.1
-    
-    nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
-    
-    learningRate = 0.00001
-
-    nEpochs = 20
-    
-elif organelle == 'Mit':
-    restoreVariables = True
-    train = False
-    test = False
-    deploy = True
-    
-    deployResolution = 'half'
-
-    deployImagePathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop3.tif'
-    deployImagePathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop3_Mit_Model2.tif'
-    deployFolderPathIn = ''#E:/Jeeyun/FIB-SEM/110117_HPF_KO45min'
-    deployFolderPathOut = ''#E:/Jeeyun/FIB-SEM/AnalysisOutputs/KO45min/Mit'
-    #deployFolderPathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
-    #deployFolderPathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_Mit'
-
-    if deploy == True:
-        imSize = 60
-        batchSize = 64
-    if train == True or test == True:
-        imSize = 60
-        batchSize = 32
-
-    modelPathIn = 'E:/Jeeyun/FIB-SEM/Models/modelMitVC2.ckpt'
-    modelPathOut ='E:/Jeeyun/FIB-SEM/Models/modelMitVC3.ckpt'
-
-    reSplitTrainSet = False
-    trainSetSplitPath = 'E:/Jeeyun/FIB-SEM/Models/modelMitVC_Shuffle.data'
-
-    logDir = 'E:/Jeeyun/FIB-SEM/Logs/logMitVC3'
-    logPath = 'E:/Jeeyun/FIB-SEM/Logs/imMitVC3.png'
-    
-    imPath = 'E:/Jeeyun/FIB-SEM/TrainData/Mit/Downsize2_TrainSet_60_Agg_PlusCrop3Blocks_CB'
-    imPathTest = 'E:/Jeeyun/FIB-SEM/TestData2'
-
-    dsm = 0.67
-    dss = 0.1
-
-    maxBrig = 0.5
-    maxCont = 0.5
-    
-    nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
-    
-    learningRate = 0.0001
-
-    nEpochs = 20
+    see *control panel* section of unet3D.py for instructions
+"""
 
 
-# --------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# control panel
+
+restoreVariables = True
+train = False
+test = False
+deploy = True
+
+deployResolution = 'full'
+
+deployImagePathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2.tif'
+deployImagePathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2_ER_CropAndSegm.tif'
+#deployFolderPathIn = ''#'E:/Jeeyun/FIB-SEM/110117_HPF_KO45min'
+#deployFolderPathOut = ''#'E:/Jeeyun/FIB-SEM/AnalysisOutputs/KO45min/ER'
+deployFolderPathIn = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
+deployFolderPathOut = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_ER'
+
+if deploy == True:
+    imSize = 120
+    batchSize = 8
+if train == True or test == True:
+    imSize = 60
+    batchSize = 32
+
+modelPathIn = 'E:/Jeeyun/FIB-SEM/Models/modelERVC.ckpt'
+modelPathOut ='E:/Jeeyun/FIB-SEM/Models/modelERVC2.ckpt'
+
+reSplitTrainSet = True
+trainSetSplitPath = 'E:/Jeeyun/FIB-SEM/Models/modelERVC_Shuffle.data'
+
+logDir = 'E:/Jeeyun/FIB-SEM/Logs/logERVC2'
+logPath = 'E:/Jeeyun/FIB-SEM/Logs/imERVC2.png'
+
+imPath = 'E:/Jeeyun/FIB-SEM/TrainData/ER/TrainSet_60_Agg_CB'
+imPathTest = 'E:/Jeeyun/FIB-SEM/TestData'
+
+dsm = 0.6479827655767296
+dss = 0.08869744364209528
+
+maxBrig = 0.5
+maxCont = 0.1
+
+nFeatMapsList = [64,32,64] # length should be 3 for input 60 to have output 20
+
+learningRate = 0.00001
+
+nEpochs = 20
+
+# ----------------------------------------------------------------------------------------------------
+# machine room
 
 
 import numpy as np
