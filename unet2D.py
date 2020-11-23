@@ -9,37 +9,92 @@
 # control panel
 
 restoreVariables = True
-train = True
-test = False
+# if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
+# if False: start training (if train = True) from scratch
+# to test or deploy a trained model, set restoreVariables = True
+
+train = False
+# if True, the script goes over the training steps,
+# either updating a model from scratch or from a previous checkpoint;
+# check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
+
+test = True
+# if True, the script runs predictions on a test set (defined by imPathTest below);
+# check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
+
 deploy = False
+# if True, runs prediction either on a single image, or on a folder of images (see below);
+# check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
 deployImagePathIn = ''#'/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
+# full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
+
 deployImagePathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_PMs.tif'
+# full path to prediction (probability maps) computed from image at deployImagePathIn
+
 deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In'
+# full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
+
 deployFolderPathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_Out'
+# folder path where outputs of prediction (probability maps) are saved;
+# the script ads _PMs to the respective input image name when naming the output
 
 imSize = 60
+# size of square image patches in the training set;
+# if len(nFeatMapsList) = 3 (see below), imSize = 60 leads to a prediction of size 20
+
 nClasses = 3
+# number of pixel classes
+
 nChannels = 1
+# number of image channels
+
 batchSize = 32
+# batch size
 
 modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
+# input model path to recover model from (when restoreVariables = True)
+
 modelPathOut ='/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
+# path where to save model
 
 reSplitTrainSet = True
+# if to re-split training set into training/validation subsets;
+# this should be set to True every time the training set changes, which happens
+# the first time the model is trained, when new training examples are added to the training set;
+# otherwise set to false, so that the training and validation sets are consistent throughout multiple
+# runs of training when restoreVariables = True
+
 trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit.data'
+# where to save training/validation split information (only indices are saved)
 
 logDir = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D'
+# path to folder where to save data for real-time visualization during training via tensorboard
+
 logPath = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D_TestSample.tif'
+# path where to save prediction on a random image from imPathTest (see below) during training
 
 imPath = '/home/cicconet/Development/PuBliCiTy/DataForPC/Train_60'
-imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test'
+# path to folder containing training/validation set;
+# images should be of size nChannels x imSize x imSize, named I%05d_Img.tif,
+# and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
+# where pixels of class 1,2,... have intensity value 1,2,... respectivelly
 
-nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
+imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test'
+# path to folder containing images for testing;
+# the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
+# for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif
+
+nFeatMapsList = [16,32,64]
+# list of depth of feature maps at corresponding layer;
+# length should be 3 for input 60 to have output 20
 
 learningRate = 0.00001
+# learning rate
 
 nEpochs = 20
+# number of epochs
+
 
 # ----------------------------------------------------------------------------------------------------
 # machine room

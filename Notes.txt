@@ -5,7 +5,7 @@ Dependencies:
 	conda install scikit-image
 	pip install joblib
 	pip install scikit-learn
-	conda install -c anaconda tensorflow-gpu cudatoolkit=10.0
+	[convs don't work; problem with cudnn] conda install -c anaconda tensorflow-gpu cudatoolkit=9.0
 
 
 Building documentation:
