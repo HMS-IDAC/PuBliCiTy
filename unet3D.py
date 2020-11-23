@@ -9,49 +9,88 @@
 # control panel
 
 restoreVariables = True
-train = False
-test = False
-deploy = True
+# if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
+# if False: start training (if train = True) from scratch
+# to test or deploy a trained model, set restoreVariables = True
 
-deployResolution = 'full'
+train = False
+# if True, the script goes over the training steps,
+# either updating a model from scratch or from a previous checkpoint;
+# check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
+
+test = False
+# if True, the script runs predictions on a test set (defined by imPathTest below);
+# check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
+
+deploy = True
+# if True, runs prediction either on a single image, or on a folder of images (see below);
+# check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
 deployImagePathIn = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2.tif'
-deployImagePathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2_ER_CropAndSegm.tif'
-#deployFolderPathIn = ''#'E:/Jeeyun/FIB-SEM/110117_HPF_KO45min'
-#deployFolderPathOut = ''#'E:/Jeeyun/FIB-SEM/AnalysisOutputs/KO45min/ER'
-deployFolderPathIn = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
-deployFolderPathOut = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_ER'
+# full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-if deploy == True:
-    imSize = 120
-    batchSize = 8
-if train == True or test == True:
-    imSize = 60
-    batchSize = 32
+deployImagePathOut = 'E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop2_ER_CropAndSegm.tif'
+# full path to prediction (probability maps) computed from image at deployImagePathIn
+
+deployFolderPathIn = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes'
+# full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
+
+deployFolderPathOut = ''#E:/Jeeyun/FIB-SEM/Crops/KO45min_Crop1_Planes_ER'
+# folder path where outputs of prediction (probability maps) are saved;
+# the script ads _PMs to the respective input image name when naming the output
+
+imSize = 60
+# size of cubic image patches in the training set;
+# if len(nFeatMapsList) = 3 (see below), imSize = 60 leads to a prediction of size 20
+
+nClasses = 3
+# number of voxel classes
+
+batchSize = 32
+# batch size
 
 modelPathIn = 'E:/Jeeyun/FIB-SEM/Models/modelERVC.ckpt'
+# input model path to recover model from (when restoreVariables = True)
+
 modelPathOut ='E:/Jeeyun/FIB-SEM/Models/modelERVC2.ckpt'
+# path where to save model
 
 reSplitTrainSet = True
+# if to re-split training set into training/validation subsets;
+# this should be set to True every time the training set changes, which happens
+# the first time the model is trained, when new training examples are added to the training set;
+# otherwise set to false, so that the training and validation sets are consistent throughout multiple
+# runs of training when restoreVariables = True
+
 trainSetSplitPath = 'E:/Jeeyun/FIB-SEM/Models/modelERVC_Shuffle.data'
+# where to save training/validation split information (only indices are saved)
 
 logDir = 'E:/Jeeyun/FIB-SEM/Logs/logERVC2'
+# path to folder where to save data for real-time visualization during training via tensorboard
+
 logPath = 'E:/Jeeyun/FIB-SEM/Logs/imERVC2.png'
+# path where to save prediction on a random image from imPathTest (see below) during training
 
-imPath = 'E:/Jeeyun/FIB-SEM/TrainData/ER/TrainSet_60_Agg_CB'
+imPath = 'E:/Jeeyun/FIB-SEM/TrainData/ER/TrainSet_60_Agg_CB'# path to folder containing training/validation set;
+# images should be of size imSize x imSize x imSize, named I%05d_Img.tif,
+# and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
+# where pixels of class 1,2,... have intensity value 1,2,... respectivelly
+
 imPathTest = 'E:/Jeeyun/FIB-SEM/TestData'
+# path to folder containing images for testing;
+# the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
+# for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif
 
-dsm = 0.6479827655767296
-dss = 0.08869744364209528
-
-maxBrig = 0.5
-maxCont = 0.1
-
-nFeatMapsList = [64,32,64] # length should be 3 for input 60 to have output 20
+nFeatMapsList = [16,32,64]
+# list of depth of feature maps at corresponding layer;
+# length should be 3 for input 60 to have output 20
 
 learningRate = 0.00001
+# learning rate
 
 nEpochs = 20
+# number of epochs
+
 
 # ----------------------------------------------------------------------------------------------------
 # machine room
@@ -71,7 +110,6 @@ from toolbox.imtools import *
 from toolbox.ftools import *
 from toolbox.PartitionOfImageVC import PI3D
 
-nClasses = 2
 nChannels = 1
 bn = True
 
