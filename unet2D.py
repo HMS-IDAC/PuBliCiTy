@@ -22,11 +22,11 @@ test = True
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = False
+deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = ''#'/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
+deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
 deployImagePathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_PMs.tif'
@@ -65,7 +65,7 @@ reSplitTrainSet = True
 # otherwise set to false, so that the training and validation sets are consistent throughout multiple
 # runs of training when restoreVariables = True
 
-trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit.data'
+trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit2D.data'
 # where to save training/validation split information (only indices are saved)
 
 logDir = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D'
@@ -161,6 +161,7 @@ t = tf.placeholder(tf.bool)
 ccidx = []
 
 hidden = [tf.to_float(x)]
+hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
 print('layer',len(hidden)-1,':',hidden[-1].shape,'input')
 
 # nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
