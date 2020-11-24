@@ -13,7 +13,7 @@ restoreVariables = False
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = True
+train = False
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
@@ -26,16 +26,13 @@ deploy = False
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = ''
+deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-deployImagePathOut = ''
-# full path to prediction (probability maps) computed from image at deployImagePathIn
-
-deployFolderPathIn = ''
+deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
 
-deployFolderPathOut = ''
+deployFolderPathOut = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_Out'
 # folder path where outputs of prediction (probability maps) are saved;
 # the script ads _PMs to the respective input image name when naming the output
 
@@ -261,14 +258,14 @@ with tf.control_dependencies(updateOps):
 
 
 if train:
-	tf.summary.scalar('loss', loss)
-	tf.summary.scalar('acc', acc)
-	mergedsmr = tf.summary.merge_all()
+    tf.summary.scalar('loss', loss)
+    tf.summary.scalar('acc', acc)
+    mergedsmr = tf.summary.merge_all()
 
-	if os.path.exists(logDir):
-		shutil.rmtree(logDir)
-	writer = tf.summary.FileWriter(logDir+'/train')
-	writer2 = tf.summary.FileWriter(logDir+'/valid')
+    if os.path.exists(logDir):
+        shutil.rmtree(logDir)
+    writer = tf.summary.FileWriter(logDir+'/train')
+    writer2 = tf.summary.FileWriter(logDir+'/valid')
 
 
 sess = tf.Session()
@@ -281,17 +278,14 @@ else:
     sess.run(tf.global_variables_initializer())
 
 
-def testOnImage(index, bnFlag):
-    V = im2double(tifread(pathjoin(imPathTest,'I%05d_Img.tif' % index)))
-
+def imageToProbMapsWithPI3D(V):
     margin = 20
     PI3D.setup(V,imSize,margin)
-    PI3D.createOutput(1)
+    PI3D.createOutput(nClasses)
     nImages = PI3D.NumPatches
 
     x_batch = np.zeros((batchSize,imSize,imSize,imSize,nChannels))
 
-    print('test on image',index)
     for i in range(nImages):
         # print(i,nImages)
         P = PI3D.getPatch(i)
@@ -300,17 +294,26 @@ def testOnImage(index, bnFlag):
         x_batch[j,:,:,:,0] = P
         
         if j == batchSize-1 or i == nImages-1:
-            output = sess.run(sm,feed_dict={x: x_batch, t: bnFlag})
+            output = sess.run(sm,feed_dict={x: x_batch, t: False})
             for k in range(j+1):
-                PI3D.patchOutput(i-j+k,output[k,:,:,:,0])
+                output_k = output[k,:,:,:,:]
+                PI3D.patchOutput(i-j+k, np.moveaxis(output_k, 3, 1))
 
-    PM = PI3D.Output
+    return PI3D.Output
 
-    V = V[20:-20,20:-20,20:-20]
-    PM = PM[20:-20,20:-20,20:-20]
+def testOnImage(index):
+    print('test on image',index)
 
-    return np.uint8(255*np.concatenate((normalize(V),PM),axis=2))
+    V = im2double(tifread(pathjoin(imPathTest,'I%05d_Img.tif' % index)))
+    PM = imageToProbMapsWithPI3D(V)
 
+    V = normalize(V)
+
+    for i in range(PM.shape[1]):
+        PMi = PM[:,i,:,:]
+        V = np.concatenate((V, PMi), axis=2)
+
+    return np.uint8(255*V)
 
 if train:
     ma = 0.5
@@ -334,9 +337,15 @@ if train:
 
             if i % 100 == 0:
                 imIndex = np.random.randint(nImagesTest)
-                outBN0 = testOnImage(imIndex,False)
+                pred = testOnImage(imIndex)
 
-                imwrite(np.squeeze(np.max(outBN0,axis=0)), logPath)
+                margin = 20
+                sel_planes = np.linspace(margin,pred.shape[0]-margin,5).astype(int)
+                pred_flat = pred[sel_planes[0], :, :]
+                for j in range(1,len(sel_planes)):
+                    pred_flat = np.concatenate((pred_flat, pred[sel_planes[j], :, :]), axis=0)
+
+                tifwrite(pred_flat, logPath)
 
                 if a > 0.7:
                     saver.save(sess, modelPathOut)
@@ -348,8 +357,7 @@ if train:
 
 if test:
     for imIndex in range(nImagesTest):
-        print('testing on image', imIndex)
-        outBN0 = testOnImage(imIndex,False)
+        outBN0 = testOnImage(imIndex)
         tifwrite(outBN0, pathjoin(imPathTest, 'I%05d_PM.tif' % imIndex))
 
 
@@ -384,95 +392,24 @@ def v2pm(V):
     return PM
 
 
+def deployOnImage(imPathIn, dirPathOut):
+    I = im2double(tifread(imPathIn))
+    PM = imageToProbMapsWithPI3D(I)
+    PM = np.uint8(255*PM)
+    [_,name,ext] = fileparts(imPathIn)
+    for i in range(nClasses):
+        tifwrite(PM[:,i,:,:], pathjoin(dirPathOut, name+'_PM_%d'%i+ext))
+
 if deploy:
     if deployImagePathIn != '':
-        V = im2double(tifread(deployImagePathIn))
-
-        V = (V-dsm)/dss
-
-        margin = 20
-        PI3D.setup(V,imSize,margin)
-        PI3D.createOutput(1)
-        nImages = PI3D.NumPatches
-
-        x_batch = np.zeros((batchSize,imSize,imSize,imSize,nChannels))
-
-        for i in range(nImages):
-            print('processing block', i, 'of', nImages)
-            P = PI3D.getPatch(i)
-
-            j = np.mod(i,batchSize)
-            x_batch[j,:,:,:,0] = P
-
-            if j == batchSize-1 or i == nImages-1:
-                if bn:
-                    output = sess.run(sm,feed_dict={x: x_batch, t: False})
-                else:
-                    output = sess.run(sm,feed_dict={x: x_batch})
-                for k in range(j+1):
-                    PI3D.patchOutput(i-j+k,output[k,:,:,:,0])
-
-        PM = PI3D.Output
-        
-        tifwrite(np.uint8(255*PM), deployImagePathOut)
-
-
+        print('deploying on image...')
+        print(deployImagePathIn)
+        deployOnImage(deployImagePathIn, deployFolderPathOut)
 
     if deployFolderPathIn != '':
-        paths = listsubdirs(deployFolderPathIn)
-        imNames = []
-        for path in paths:
-            l = listfiles(path,'Cryo_','._Cryo')
-            print(len(l))
-            imNames += l
-        
-        # imNames = listfiles(deployFolderPathIn, '.tif')
-
-        print('found', len(imNames), 'images')
-			
-        I = tifread(imNames[0])
-        nPlanes = len(imNames)
-        
-        margin = 20
-        patchSize = imSize
-            
-        subPatchSize = patchSize-2*margin
-        nSlices = int(np.floor((nPlanes-2*margin)/subPatchSize))
-        if nSlices*subPatchSize+2*margin < nPlanes:
-            nSlices += 1
-                    
-        for iZ in range(0, nSlices):
-            z0 = np.minimum(iZ*subPatchSize,nPlanes-patchSize)
-            z1 = z0+patchSize
-            sz0 = z0+margin
-            sz1 = sz0+subPatchSize
-            print(z0,sz0,sz1,z1)
-
-            V = np.zeros((patchSize,I.shape[0],I.shape[1]))
-            for i in range(z0,z1):
-                print('processing slice', iZ, 'of', nSlices, 'reading plane', i)
-                V[i-z0,:,:] = im2double(tifread(imNames[i]))
-
-                
-            print('v2pm...')
-            PM = v2pm(V)
-            print('...done')
-            
-
-            print('writing...')
-            for i in range(sz0,sz1):
-                print('writing plane', i)
-                tifwrite(np.uint8(255*PM[i-sz0+margin,:,:]), pathjoin(deployFolderPathOut, 'I_%05d.tif' % i))
-            print('...done')
-
-        # remaining margin planes are zero
-        I0 = np.zeros(I.shape,dtype=np.uint8)
-        for i in range(margin):
-            print('writing plane', i)
-            tifwrite(I0, pathjoin(deployFolderPathOut, 'I_%05d.tif' % i))
-        for i in range(sz1,nPlanes):
-            print('writing plane', i)
-            tifwrite(I0, pathjoin(deployFolderPathOut, 'I_%05d.tif' % i))
-
+        imPathList = listfiles(deployFolderPathIn, '.tif')
+        for idx, imPathIn in enumerate(imPathList):
+            print('deploying on image %d of %d' % (idx+1, len(imPathList)))
+            deployOnImage(imPathIn, deployFolderPathOut)            
 
 sess.close()

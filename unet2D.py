@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = True
+restoreVariables = False
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
@@ -18,19 +18,16 @@ train = False
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = True
+test = False
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = True
+deploy = False
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_Img.tif'
+deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
-
-deployImagePathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test/I00000_PMs.tif'
-# full path to prediction (probability maps) computed from image at deployImagePathIn
 
 deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
@@ -361,24 +358,24 @@ if test:
         pred = testOnImage(imIndex)
         tifwrite(pred, pathjoin(imPathTest, 'Pred_I%05d.tif' % imIndex))
 
+def deployOnImage(imPathIn, dirPathOut):
+    I = im2double(tifread(imPathIn))
+    PM = imageToProbMapsWithPI2D(I)
+    PM = np.uint8(255*PM)
+    [_,name,ext] = fileparts(imPathIn)
+    tifwrite(PM, pathjoin(dirPathOut, name+'_PMs'+ext))
+
 if deploy:
     if deployImagePathIn != '':
         print('deploying on image...')
         print(deployImagePathIn)
-        I = im2double(tifread(deployImagePathIn))
-        PM = imageToProbMapsWithPI2D(I)
-        PM = np.uint8(255*PM)
-        tifwrite(PM, deployImagePathOut)
+        deployOnImage(deployImagePathIn, deployFolderPathOut)
 
     if deployFolderPathIn != '':
         imPathList = listfiles(deployFolderPathIn, '.tif')
-        for idx, item in enumerate(imPathList):
+        for idx, imPathIn in enumerate(imPathList):
             print('deploying on image %d of %d' % (idx+1, len(imPathList)))
-            I = im2double(tifread(item))
-            PM = imageToProbMapsWithPI2D(I)
-            PM = np.uint8(255*PM)
-            [_,name,ext] = fileparts(item)
-            tifwrite(PM, pathjoin(deployFolderPathOut, name+'_PMs'+ext))
+            deployOnImage(imPathIn, deployFolderPathOut)            
 
 
 sess.close()
