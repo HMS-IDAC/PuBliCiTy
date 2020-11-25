@@ -13,7 +13,7 @@ restoreVariables = False
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = False
+train = True
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
@@ -40,10 +40,10 @@ imSize = 60
 # size of cubic image patches in the training set;
 # if len(nFeatMapsList) = 3 (see below), imSize = 60 leads to a prediction of size 20
 
-nClasses = 3
+nClasses = 2
 # number of voxel classes
 
-batchSize = 4
+batchSize = 8
 # batch size
 
 modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
@@ -52,7 +52,7 @@ modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
 modelPathOut ='/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
 # path where to save model
 
-reSplitTrainSet = True
+reSplitTrainSet = False
 # if to re-split training set into training/validation subsets;
 # this should be set to True every time the training set changes, which happens
 # the first time the model is trained, when new training examples are added to the training set;
@@ -123,6 +123,7 @@ if train:
 
 
 nImagesTest = len(listfiles(imPathTest,'_Img.tif'))
+
 
 def getBatch(n, dataset='train'):
     x_batch = np.zeros((n,imSize,imSize,imSize,nChannels))
@@ -340,7 +341,7 @@ if train:
                 pred = testOnImage(imIndex)
 
                 margin = 20
-                sel_planes = np.linspace(margin,pred.shape[0]-margin,5).astype(int)
+                sel_planes = np.linspace(margin,pred.shape[0]-margin-1,5).astype(int)
                 pred_flat = pred[sel_planes[0], :, :]
                 for j in range(1,len(sel_planes)):
                     pred_flat = np.concatenate((pred_flat, pred[sel_planes[j], :, :]), axis=0)
