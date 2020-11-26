@@ -13,16 +13,16 @@ restoreVariables = False
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = False
+train = True
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = False
+test = True
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = False
+deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
@@ -55,7 +55,7 @@ modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
 modelPathOut ='/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
 # path where to save model
 
-reSplitTrainSet = True
+reSplitTrainSet = False
 # if to re-split training set into training/validation subsets;
 # this should be set to True every time the training set changes, which happens
 # the first time the model is trained, when new training examples are added to the training set;
@@ -103,10 +103,11 @@ import os, shutil, sys
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
-from tensorflow.keras.layers import Dense, Conv2D, Conv2DTranspose, UpSampling2D, MaxPooling2D, Flatten, concatenate, Cropping2D, Activation
+from tensorflow.keras.layers import Dense, Conv2D, Conv2DTranspose, UpSampling2D, MaxPooling2D, Flatten, concatenate, Cropping2D, Activation, BatchNormalization
 from tensorflow.keras import Input, Model
 
 os.environ['CUDA_VISIBLE_DEVICES']=''
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 from gpfunctions import *
 from PartitionOfImageVC import PI2D
@@ -158,7 +159,7 @@ t = tf.placeholder(tf.bool)
 ccidx = []
 
 hidden = [tf.to_float(x)]
-hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+hidden.append(BatchNormalization()(hidden[-1], training=t))
 print('layer',len(hidden)-1,':',hidden[-1].shape,'input')
 
 # nFeatMapsList = [16,32,64] # length should be 3 for input 60 to have output 20
@@ -170,9 +171,9 @@ for i in range(len(nFeatMapsList)-1):
     print('...')
     nFeatMaps = nFeatMapsList[i]
     hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-    hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+    hidden.append(BatchNormalization()(hidden[-1], training=t))
     hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-    hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+    hidden.append(BatchNormalization()(hidden[-1], training=t))
     hidden.append(Activation('relu')(hidden[-1]))
     ccidx.append(len(hidden)-1)
     print('layer',len(hidden)-1,':',hidden[-1].shape,'after conv conv bn')
@@ -186,11 +187,11 @@ i = len(nFeatMapsList)-1
 print('...')
 nFeatMaps = nFeatMapsList[i]
 hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+hidden.append(BatchNormalization()(hidden[-1], training=t))
 hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+hidden.append(BatchNormalization()(hidden[-1], training=t))
 hidden.append(Activation('relu')(hidden[-1]))
-# hidden.append(tf.nn.batch_normalization(hidden[-1], bnm[len(bna)], bns[len(bna)], 0.0, 1.0, 0.000001))
+# hidden.appBatchNormalization()(hidden[-1], bnm[len(bna)], bns[len(bna)], 0.0, 1.0, 0.000001))
 # hidden.append((hidden[-1]-bnm[len(bna)])/bns[len(bna)])
 # bna.append(hidden[-1])
 # print('len bna',len(bna))
@@ -207,11 +208,11 @@ for i in range(len(nFeatMapsList)-1):
     hidden.append(concatenate([hidden[-1], Cropping2D(toCrop)(hidden[ccidx[-1-i]])]))
     print('layer',len(hidden)-1,':',hidden[-1].shape,'after concat with cropped layer %d' % ccidx[-1-i])
     hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-    hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+    hidden.append(BatchNormalization()(hidden[-1], training=t))
     hidden.append(Conv2D(nFeatMaps,(3),padding='valid',activation=None)(hidden[-1]))
-    hidden.append(tf.layers.batch_normalization(hidden[-1], training=t))
+    hidden.append(BatchNormalization()(hidden[-1], training=t))
     hidden.append(Activation('relu')(hidden[-1]))
-    # hidden.append(tf.nn.batch_normalization(hidden[-1], bnm[len(bna)], bns[len(bna)], 0.0, 1.0, 0.000001))
+    # hidden.appBatchNormalization()(hidden[-1], bnm[len(bna)], bns[len(bna)], 0.0, 1.0, 0.000001))
     # hidden.append((hidden[-1]-bnm[len(bna)])/bns[len(bna)])
     # bna.append(hidden[-1])
     # print('len bna',len(bna))

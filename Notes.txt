@@ -5,7 +5,7 @@ Dependencies:
 	conda install scikit-image
 	pip install joblib
 	pip install scikit-learn
-	[convs don't work; problem with cudnn] conda install -c anaconda tensorflow-gpu cudatoolkit=9.0
+	pip install tensorflow (batch normalization not working in 2D with GPU)
 
 
 Building documentation:

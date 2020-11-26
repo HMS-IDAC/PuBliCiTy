@@ -8,21 +8,21 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = False
+restoreVariables = True
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = True
+train = False
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = False
+test = True
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = False
+deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
@@ -43,7 +43,7 @@ imSize = 60
 nClasses = 2
 # number of voxel classes
 
-batchSize = 8
+batchSize = 4
 # batch size
 
 modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
@@ -103,7 +103,8 @@ tf.disable_v2_behavior()
 from tensorflow.keras.layers import Dense, Conv3D, Conv3DTranspose, MaxPooling3D, Flatten, concatenate, Cropping3D, Activation, Dropout
 from tensorflow.keras import Input, Model
 
-os.environ['CUDA_VISIBLE_DEVICES']=''
+os.environ['CUDA_VISIBLE_DEVICES']='0'
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 from gpfunctions import *
 from PartitionOfImageVC import PI3D
@@ -359,7 +360,7 @@ if train:
 if test:
     for imIndex in range(nImagesTest):
         outBN0 = testOnImage(imIndex)
-        tifwrite(outBN0, pathjoin(imPathTest, 'I%05d_PM.tif' % imIndex))
+        tifwrite(outBN0, pathjoin(imPathTest, 'Pred_I%05d.tif' % imIndex))
 
 
 def v2pm(V):
