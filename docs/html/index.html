@@ -1,0 +1,1749 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gpfunctions &#8212; PuBliCiTy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PuBliCiTy  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">gpfunctions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-gpfunctions">
+<span id="gpfunctions"></span><h1>gpfunctions<a class="headerlink" href="#module-gpfunctions" title="Permalink to this headline">¶</a></h1>
+<p>general purpose functions</p>
+<dl class="py function">
+<dt id="gpfunctions.adapthisteq">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">adapthisteq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.adapthisteq" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns adaptive-histogram-equalized input</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.bwInterpSingleObjectMasks">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">bwInterpSingleObjectMasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.bwInterpSingleObjectMasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>interpolates two object masks</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I, J: masks</p>
+<p>a: interpolation factor, between 0 and 1;
+0 returns I, 1 return J</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>interpolated mask</p>
+</dd>
+</dl>
+<p><em>example:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">400</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">400</span><span class="p">))</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span><span class="o">-</span><span class="mi">150</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">Y</span><span class="o">-</span><span class="mi">210</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">50</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="mi">200</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">Y</span><span class="o">-</span><span class="mi">200</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">100</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">bwInterpSingleObjectMasks</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="n">imshowlist</span><span class="p">([</span><span class="n">I</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">J</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.cat">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">cat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">J</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.cat" title="Permalink to this definition">¶</a></dt>
+<dd><p>concatenates <em>I</em> and <em>J</em> along axis <em>a</em></p>
+<p><em>implementation:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>        
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.centerCrop">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">centerCrop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">nc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.centerCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>crops center portion of 2D, single channel image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>nr: number of rows of output crop</p>
+<p>nr: number of columns of output crop</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>crop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.centerCropMultChan">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">centerCropMultChan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">nc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.centerCropMultChan" title="Permalink to this definition">¶</a></dt>
+<dd><p>crops center portion of 2D, multi channel image; assumes channels are on 1sd dimension</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>nr: number of rows of output crop</p>
+<p>nr: number of columns of output crop</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>crop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.changeViewPlane">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">changeViewPlane</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">currentViewPlane</span></em>, <em class="sig-param"><span class="n">newViewPlane</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.changeViewPlane" title="Permalink to this definition">¶</a></dt>
+<dd><p>changes view plane of 3D image, via numpy’s <em>moveaxis</em> function</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 3D image</p>
+<p>currentViewPlane: ‘x’, ‘y’ or ‘z’; current view plane</p>
+<p>newViewPlane: ‘x’, ‘y’, or ‘z’; output view plane</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>3D image with moved view plane</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.circleKernel">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">circleKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">ftype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.circleKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>circular kernel for circular shape detection</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>radius: radius of circle</p>
+<p>sigma: sigma of gaussian or LoG kernel (see ftype parameter)</p>
+<p>ftype: ‘log’ or ‘gauss’; use ‘log’ for kernel appropriate for ‘empty circle’ detection;
+use ‘gauss’ for kernel apropriate for ‘full circle’ detection</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>kernel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.conv2">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">conv2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">m</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.conv2" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D convolution</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D image</p>
+<p>K: 2D kernel</p>
+<p>m: mode (‘full’, ‘valid’, ‘same’)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>convolved image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.conv3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">conv3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">m</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.conv3" title="Permalink to this definition">¶</a></dt>
+<dd><p>3D convolution</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 3D image</p>
+<p>K: 3D kernel</p>
+<p>m: mode (‘full’, ‘valid’, ‘same’)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>convolved image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.copyFile">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">copyFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fullPathSource</span></em>, <em class="sig-param"><span class="n">folderPathDestination</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.copyFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>copies file with full path <em>fullPathSource</em> to folder <em>folderPathDestination</em></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.createFolderIfNonExistent">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">createFolderIfNonExistent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.createFolderIfNonExistent" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates folder if non existent</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>full path to folder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.fileparts">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">fileparts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.fileparts" title="Permalink to this definition">¶</a></dt>
+<dd><p>splits file path into components</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>file path, e.g. ‘/path/to/file.ext’</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>[root, name, extension], e.g. [‘/path/to’, ‘file’, ‘ext’]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.findSpots2D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">findSpots2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">thr</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.findSpots2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>finds spots in 2D image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D image; should be double, in range [0, 1]</p>
+<p>sigma: scale of spots; should be an integer: 1, 2, 3, …</p>
+<p>thr: correlation threshold for spot selection; should be in range (0, 1), where 1
+means identically correlated to ‘ideal’ spot</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>psList: list of candidate spots</p>
+<p>sPsList: list of selected spots</p>
+<p>I3: RGB image visualizing candidate and selected spots</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.findSpots3D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">findSpots3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">thr</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.findSpots3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>finds spots in 3D image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 3D image; should be double, in range [0, 1]</p>
+<p>sigma: scale of spots; should be an integer: 1, 2, 3, …</p>
+<p>thr: correlation threshold for spot selection; should be in range (0, 1), where 1
+means identically correlated to ‘ideal’ spot</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>psList: list of candidate spots</p>
+<p>sPsList: list of selected spots</p>
+<p>S: 3D image visualizing selected spots</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.fullPatchCoordinates2D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">fullPatchCoordinates2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">nc</span></em>, <em class="sig-param"><span class="n">patchSize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.fullPatchCoordinates2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>patch coordinates of a 2D image split without overlap</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>nr: number of image rows</p>
+<p>nc: number of image columns</p>
+<p>patchSize: size of each side of a square patch</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of patch coordinates [[row0, row1, col0, col1], …]</p>
+</dd>
+<dt><em>note:</em></dt><dd><p>assumes nr and nc are multiples of patchSize</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.fullPatchCoordinates3D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">fullPatchCoordinates3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nz</span></em>, <em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">nc</span></em>, <em class="sig-param"><span class="n">patchSize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.fullPatchCoordinates3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>patch coordinates of a 3D image split without overlap</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>nz: number of image planes</p>
+<p>nr: number of image rows</p>
+<p>nc: number of image columns</p>
+<p>patchSize: size of each side of a cubic patch</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of patch coordinates [[pln0, pln1, row0, row1, col0, col1], …]</p>
+</dd>
+<dt><em>note:</em></dt><dd><p>assumes nz, nr, nc are multiples of patchSize</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.histeq">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">histeq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.histeq" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns histogram-equalized input</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.im2double">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">im2double</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.im2double" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts uint16, uint8, float32 images into float64 images,
+while normalizing intensity values to range [0, 1]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imD2U16">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imD2U16</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imD2U16" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts uint16 image to double</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imDouble2UInt16">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imDouble2UInt16</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imDouble2UInt16" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts uint16 image to double</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imadjust">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imadjust</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imadjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>maps 1st pixel intensity percentile to 0 and 99th to 1, linearly stretching
+intensities in between, and clipping intensities outside the interval</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>image</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>adjusted image</p>
+</dd>
+</dl>
+<p><em>implementation:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">p99</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">(</span><span class="n">I</span><span class="o">-</span><span class="n">p1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">p99</span><span class="o">-</span><span class="n">p1</span><span class="p">)</span>
+<span class="n">I</span><span class="p">[</span><span class="n">I</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">I</span><span class="p">[</span><span class="n">I</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">return</span> <span class="n">I</span>    
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imadjustcontrast">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imadjustcontrast</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im</span></em>, <em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imadjustcontrast" title="Permalink to this definition">¶</a></dt>
+<dd><p>simple contrast adjustment, keeping average pixel intensity</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im: image</p>
+<p>c: contrast adjustment factor; should be in the range (0, Inf);
+c = 1 implies no contrast change</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>contrast-adjusted image</p>
+</dd>
+</dl>
+<p><em>implementation:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="k">return</span> <span class="p">(</span><span class="n">im</span><span class="o">-</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="n">c</span><span class="o">+</span><span class="n">m</span>        
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imadjustgamma">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imadjustgamma</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im</span></em>, <em class="sig-param"><span class="n">gamma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imadjustgamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>gamma correction of luminance values</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im: image</p>
+<p>gamma: gamma factor, a float between 0 and 1</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>corrected image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imbinarize">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imbinarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imbinarize" title="Permalink to this definition">¶</a></dt>
+<dd><p>applies otsu threshold</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>I: image</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>binary thresholded image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imderivatives">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imderivatives</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigmas</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imderivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes stack of derivatives of 2D image, up to second order</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D image</p>
+<p>sigmas: list of sigmas for gaussian filtering before computing derivatives</p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of derivatives if justfeatnames = False, otherwise just feature names;
+for each sigma, the following derivatives are computed: d0, dx, dy, dxx, dxy, dyy,
+normGrad (gradient magnitude), normHessDiag (norm of diagonal of hessian)</p>
+<p>derivatives are indexed by the last dimension,
+which is good for ML features but not for visualization,
+in which case the expected dimensions are [plane,channel,y(row),x(col)];
+to obtain that ordering, do D = np.moveaxis(D,[0,3,1,2],[0,1,2,3]) on the output D</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imderivatives3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imderivatives3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigmas</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imderivatives3" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes stack of derivatives of 3D image, up to second order</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 3D image</p>
+<p>sigmas: list of sigmas for gaussian filtering before computing derivatives</p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of derivatives if justfeatnames = False, otherwise just feature names;
+for each sigma, the following derivatives are computed:
+d0, dx, dy, dz, dxx, dxy, dxz, dyy, dyz, dzz,
+normGrad (gradient magnitude), normHessDiag (norm of diagonal of hessian)</p>
+<p>derivatives are indexed by the last dimension</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imdilate">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imdilate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imdilate" title="Permalink to this definition">¶</a></dt>
+<dd><p>binary dilation</p>
+<dl>
+<dt><em>inputs</em>:</dt><dd><p>I: binary image</p>
+<p>r: radius of disk structuring element</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>dilated image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imdilate3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imdilate3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imdilate3" title="Permalink to this definition">¶</a></dt>
+<dd><p>binary 3D dilation</p>
+<dl>
+<dt><em>inputs</em>:</dt><dd><p>I: binary 3D image</p>
+<p>r: radius of sphere structuring element</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>dilated 3D image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imerode">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imerode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imerode" title="Permalink to this definition">¶</a></dt>
+<dd><p>binary erosion</p>
+<dl>
+<dt><em>inputs</em>:</dt><dd><p>I: binary image</p>
+<p>r: radius of disk structuring element</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>eroded image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imerode3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imerode3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imerode3" title="Permalink to this definition">¶</a></dt>
+<dd><p>binary 3D erosion</p>
+<dl>
+<dt><em>inputs</em>:</dt><dd><p>I: binary 3D image</p>
+<p>r: radius of sphere structuring element</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>eroded 3D image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imfeatures">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imfeatures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">sigmaDeriv</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">sigmaLoG</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">locStatsRad</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imfeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes 2D image features based on <em>imderivatives</em>, <em>imlogfilt</em>, and <em>localstats</em></p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D image, or empty list [] (which is convenient when justfeatnames=True)</p>
+<p>sigmaDeriv: list of sigmas to pass on to <em>imderivatives</em></p>
+<p>sigmaLoG: list of sigmas to use in <em>imlogfilt</em></p>
+<p>locStatsRad: list of radii to use in <em>localstats</em></p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of features, indexed by last dimension
+if justfeatnames = False; otherwise just feature names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imfeatures3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imfeatures3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">sigmaDeriv</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sigmaLoG</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sigmaSurf</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">locStatsRad</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imfeatures3" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes 3D image features based on <em>imderivatives3</em>, <em>imlogfilt</em>, and <em>localstats3</em></p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 3D image, or empty list [] (which is convenient when justfeatnames=True)</p>
+<p>sigmaDeriv: list of sigmas to pass on to <em>imderivatives3</em></p>
+<p>sigmaLoG: list of sigmas to use in <em>imlogfilt</em></p>
+<p>sigmaSurf: list of sigmas to use in <em>imridgelikl</em></p>
+<p>locStatsRad: list of radii to use in <em>localstats3</em></p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of features, indexed by last dimension
+if justfeatnames = False; otherwise just feature names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imgaussfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imgaussfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imgaussfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>gaussian (blur) filter</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>sigma: sigma parameter of gaussian filter</p>
+<p>kwargs: extra arguments passed to scipy.ndimage.gaussian_filter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imgradmag">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imgradmag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imgradmag" title="Permalink to this definition">¶</a></dt>
+<dd><p>gradient magnitude, i.e., norm of the gradient image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D or 3D image</p>
+<p>sigma: sigma for filtering before computing the gradient</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>gradient magnitude image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imlogfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imlogfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imlogfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>laplacian of gaussian (LoG) filter</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>sigma: sigma parameter of LoG filter</p>
+<p>kwargs: extra arguments passed to scipy.ndimage.gaussian_laplace</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image; technically the inverse of the LoG operator, so that bright spots
+in the image result in bright spots in the output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imread">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imread</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imread" title="Permalink to this definition">¶</a></dt>
+<dd><p>generic image reading function; simply wraps skimage.io.imread;
+for .tif images, use <em>tifread</em> instead</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imrescale">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imrescale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im</span></em>, <em class="sig-param"><span class="n">factor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imrescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>rescales image with respect to center</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im: image</p>
+<p>factor: rescale factor (float)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>rescaled image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imresize">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imresize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sizeOut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imresize" title="Permalink to this definition">¶</a></dt>
+<dd><p>resizes 2D, single channel image (types uint8, uint16, float32 or float64 (double))</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>sizeOut: list of output sizes in rows and columns, e.g. [n_rows, n_cols]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>resized image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imresize3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imresize3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sizeOut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imresize3" title="Permalink to this definition">¶</a></dt>
+<dd><p>resizes 3D, single channel image (types uint8, uint16, float32 or float64 (double))</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>sizeOut: list of output sizes in planes, rows and columns, e.g. [n_plns, n_rows, n_cols]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>resized image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imresize3FromPlanePathList">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imresize3FromPlanePathList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">imPathList</span></em>, <em class="sig-param"><span class="n">resizeFactor</span></em>, <em class="sig-param"><span class="n">zStretch</span></em>, <em class="sig-param"><span class="n">resizeBufferFolderPath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imresize3FromPlanePathList" title="Permalink to this definition">¶</a></dt>
+<dd><p>resizes 3D images from a list of .tif paths;
+this is a convenience function to help visualizing large 3D image files,
+which are often times saved as a set of planes in a folder;
+2D resizing is aplied for every plane, in parallel, then 3D resizing is applied
+in the stack of planes; thus this does not perform ‘true’ 3D resizing, which is
+why it’s best to use it for visualization purposes, and cases where true 3D would
+be impractical due to memory constraints</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>imPathList: list of .tif paths</p>
+<p>resizeFactor: float between 0 and 1 indicating amount of resizing</p>
+<p>zStretch: float between 0 and 1 indicating proportion of z stretch
+w.r.t. xy to be performed</p>
+<p>resizeBufferFolderPath: path to folder where resized 2D planes are temporarily saved;
+this folder is created by the script, then removed when processing is finished</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>resized 3D image</p>
+</dd>
+</dl>
+<p><em>example:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">planePathList</span> <span class="o">=</span> <span class="n">listfiles</span><span class="p">(</span><span class="s1">&#39;/path/to/folder&#39;</span><span class="p">,</span> <span class="s1">&#39;.tif&#39;</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">imresize3FromPlanePathList</span><span class="p">(</span><span class="n">planePathList</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">6.17</span><span class="p">,</span> <span class="s1">&#39;/path/to/resize/buffer&#39;</span><span class="p">)</span>
+<span class="n">tifwrite</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="s1">&#39;/path/to/resized/image.tif&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imridgelikl">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imridgelikl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imridgelikl" title="Permalink to this definition">¶</a></dt>
+<dd><p>highlights ridges in 2D or 3D image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image, 2D or 3D</p>
+<p>sigma: scale of ridges</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>ridge likelihood image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imrotate">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imrotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im</span></em>, <em class="sig-param"><span class="n">angle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imrotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotates image with respect to center</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im: image</p>
+<p>angle: angle of rotation, in degrees</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>rotated image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imshow">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imshow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imshow" title="Permalink to this definition">¶</a></dt>
+<dd><p>displays image; <em>kwargs</em> are passed to matplotlib’s <em>imshow</em> function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imshowlist">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imshowlist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imshowlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>displays list of images, e.g. <em>L = [I1, I2, I3]</em>;
+<em>kwargs</em> are passed to matplotlib’s <em>imshow</em> function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imtranslate">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imtranslate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im</span></em>, <em class="sig-param"><span class="n">tx</span></em>, <em class="sig-param"><span class="n">ty</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imtranslate" title="Permalink to this definition">¶</a></dt>
+<dd><p>applies translation transform</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im: image</p>
+<p>tx: translation in x (columns)</p>
+<p>ty: translation in y (rows)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>translated image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.imwrite">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imwrite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imwrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>generic image writing function; simply wraps skimage.io.imsave;
+for .tif images, use <em>tifwrite</em> instead</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.interpolateAnnotations3D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">interpolateAnnotations3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">classIdx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.interpolateAnnotations3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>interpolates plane annotations on 3D images</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>A: annotation image</p>
+<p>classIdx: index of class to interpolate</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>image with interpolated anotations</p>
+</dd>
+<dt><em>note:</em></dt><dd><p>this function uses bwInterpSingleObjectMasks to ‘fill in’ planes in between
+those which have been annotated with label <em>classIdx</em>; it assumes
+annotations on each plane correspond to a single closed contour</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.list2stack">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">list2stack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.list2stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>stacks a list of planes</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>l: list of planes</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack, with planes indexed by the first dimension</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.listfiles">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">listfiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">token</span></em>, <em class="sig-param"><span class="n">tokenExclude</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.listfiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>lists files in folder</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>path: path to folder</p>
+<p>token: a string; filenames containig this are selected</p>
+<p>tokenExcluded: a string; filenames containing this are excluded</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of file paths</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.listsubdirs">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">listsubdirs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">returnFullPath</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.listsubdirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>lists subdirectories inside directory</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>path: full path to directory</p>
+<p>returnFullPath: if to return full path, as opposed to subfolders</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of paths</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.loadData">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">loadData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.loadData" title="Permalink to this definition">¶</a></dt>
+<dd><p>loads python data via pickle</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>path: full path to data file</p>
+<p>verbose: True or False; if True, logs terminal message that data is being saved</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.localstats">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">localstats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.localstats" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes local percentiles in 2D images</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>I: 2D image</p>
+<p>radius: radius of disk structuring element</p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of percentile filtered images, for percentiles 10, 30, 50, 70, 90,
+if justfeatnames = False, otherwise just feature names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.localstats3">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">localstats3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">justfeatnames</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.localstats3" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes local percentiles in 3D images</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>I: 3D image</p>
+<p>radius: radius of sphere structuring element</p>
+<p>justfeatnames: True or False; if to output just feature names
+(this is useful to allocate memory in certain machine learning tasks)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of percentile filtered images, for percentiles 10, 30, 50, 70, 90,
+if justfeatnames = False, otherwise just feature names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.logKernel3D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">logKernel3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.logKernel3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>laplacian of gaussian 3D kernel</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>sigma: kernel sigma parameter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>3D kernel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.maxfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">maxfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">filterRadius</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.maxfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>max filter using spherical structural element (disk for 2D images and sphere for 3D)</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>filterRadius: radius of max filter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.medfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">medfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">filterRadius</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.medfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>median filter using spherical structural element (disk for 2D images and sphere for 3D)</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>filterRadius: radius of median filter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.minfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">minfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">filterRadius</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.minfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>min filter using spherical structural element (disk for 2D images and sphere for 3D)</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>filterRadius: radius of min filter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.morletKernel">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">morletKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stretch</span></em>, <em class="sig-param"><span class="n">scale</span></em>, <em class="sig-param"><span class="n">orientation</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.morletKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>morlet wavelet kernel</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>stretch: stretch (elongation) parameter</p>
+<p>scale: scale parameter</p>
+<p>orientation: orientation parameter (in degrees)</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>mr, mi: the real and imaginary parts of the kernel, respectively</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.moveFile">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">moveFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fullPathSource</span></em>, <em class="sig-param"><span class="n">folderPathDestination</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.moveFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>moves file with full path <em>fullPathSource</em> to folder <em>folderPathDestination</em></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.normalize">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>linearly maps pixel intensity to range [0, 1], unless the original range is 0
+(i.e. all pixel values are the same), in which case output = input</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>image</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>normalized image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.pad">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>pads image with zeros</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: 2D, single channel image</p>
+<p>k: ammount to pad at each border</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>padded image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.pathjoin">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">pathjoin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">ne</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.pathjoin" title="Permalink to this definition">¶</a></dt>
+<dd><p>joins root path with file name (including extension)</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>p: root path, e.g. ‘/path/to/folder’</p>
+<p>ne: name+extension, e.g. ‘file.ext’</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>joined path, e.g. ‘/path/to/folder/file.ext’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.pause">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>pauses process for <em>interval</em> seconds</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.planes2rgb">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">planes2rgb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">R</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">G</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">B</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.planes2rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>makes an RGB image out of 2D planes</p>
+<dl>
+<dt><em>inputs</em>:</dt><dd><p>R: ‘red’ image plane</p>
+<p>G: ‘green’ image plane</p>
+<p>B: ‘blue’ image plane</p>
+</dd>
+<dt><em>ouput:</em></dt><dd><p>RGB image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.ptlfilt">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">ptlfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">percentile</span></em>, <em class="sig-param"><span class="n">filterRadius</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.ptlfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>percentile filter using spherical structural element (disk for 2D images and sphere for 3D);
+note that ptlfilt(I, 50, filterRadius) = medfilt(I, filterRadius)</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>percentile: percentile value between 0 and 100</p>
+<p>filterRadius: radius of percentile filter</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>filtered image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.readTable">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">readTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.readTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>simple csv reading function using Pandas</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>full path to csv table</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>[colTitles, matrix], where</p>
+<p>colTitles: list of column titles</p>
+<p>matrix: data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.removeFile">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">removeFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.removeFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes file with full path <em>fullPathSource</em>; no warnings shown</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.removeFolderIfExistent">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">removeFolderIfExistent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.removeFolderIfExistent" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes folder if existent</p>
+<dl class="simple">
+<dt><em>input</em>:</dt><dd><p>full path to folder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.rgb2gray">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">rgb2gray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.rgb2gray" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrap around skimage.color.rgb2grey</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.saveData">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">saveData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.saveData" title="Permalink to this definition">¶</a></dt>
+<dd><p>saves python data via pickle</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>data: data to save</p>
+<p>path: full path where to save</p>
+<p>verbose: True or False; if True, logs terminal message that data is being saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.size">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the size of image <em>I</em>, as given by numpy’s shape property; literally:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">I</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.snormalize">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">snormalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.snormalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>linearly changes pixel intensities so that the output pixel intensities
+have average 0 and standard deviation 1;
+if original standard deviation is 0, output = input</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>image</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>normalized image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.splitIntoTiles2D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">splitIntoTiles2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pathIn</span></em>, <em class="sig-param"><span class="n">pathOut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.splitIntoTiles2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>splits images/annotations into tiles for unet2D model training</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>pathIn: input folder path; expects folder containing a list of pairs (image, annotation)
+where each pair is named following the pattern ‘rootname_Img.tif’, ‘rootname_Ant.tif’;
+_Img.tif is expected to be a single-channel 2D image; _Ant.tif is expected to be
+uint8, where pixels labeled 1, 2, 3, etc correspond to class 1, 2, 3, etc, respectively</p>
+<p>pathOut: output folder path; the function will get patches of size 60x60 every 20 pixels
+in each dimension, re-index them, and write to the output folder; patches where there
+are no labeled pixels (all pixels from _Ant.tif in that patch are 0) will be discarded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.splitIntoTiles3D">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">splitIntoTiles3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pathIn</span></em>, <em class="sig-param"><span class="n">pathOut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.splitIntoTiles3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>splits images/annotations into tiles for unet3D model training</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>pathIn: input folder path; expects folder containing a list of pairs (image, annotation)
+where each pair is named following the pattern ‘rootname_Img.tif’, ‘rootname_Ant.tif’;
+_Img.tif is expected to be a single-channel 2D image; _Ant.tif is expected to be
+uint8, where pixels labeled 1, 2, 3, etc correspond to class 1, 2, 3, etc, respectively</p>
+<p>pathOut: output folder path; the function will get patches of size 60x60 every 20 pixels
+in each dimension, re-index them, and write to the output folder; patches where there
+are no labeled pixels (all pixels from _Ant.tif in that patch are 0) will be discarded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.stack2Mosaic">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">stack2Mosaic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">S</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.stack2Mosaic" title="Permalink to this definition">¶</a></dt>
+<dd><p>builds mosaic from a stack of 2D images</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>S: stack; assumes planes are indexed by first coordinate</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>mosaic, of type uint8, regardless of input type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.stack2list">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">stack2list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">S</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.stack2list" title="Permalink to this definition">¶</a></dt>
+<dd><p>turns a stack of planes into a list of planes</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>S: stack of planes; assumes they are indexed by last dimension</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of planes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.surfaceKernels">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">surfaceKernels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">radius</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.surfaceKernels" title="Permalink to this definition">¶</a></dt>
+<dd><p>kernels for 3D surface detection</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>sigma: sigma of kernels</p>
+<p>radius: controls size of kernel, which is 2*(radius + 2*sigma)+1; 
+if radius = None, it’s replaced with radius = 4*sigma</p>
+<p>quantity: number of surface kernels; options are 3, 4, 6, 10</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>list of surface kernels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.thrsegment">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">thrsegment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">wsBlr</span></em>, <em class="sig-param"><span class="n">wsThr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.thrsegment" title="Permalink to this definition">¶</a></dt>
+<dd><p>basic threshold segmentation</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>wsBlr: blur parameter, between 0 and 1; 0 implies a gaussian filtering
+with sigma 1, 1 implies a gaussian filtering with sigma 5</p>
+<p>wsThr: threshold parameter, between 0 and 1</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>binary threholded image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.tic">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">tic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.tic" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns current time</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.tifread">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">tifread</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.tifread" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads .tif image file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.tifwrite">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">tifwrite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.tifwrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes image <em>I</em> into tif file with fill path <em>path</em></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.toc">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">toc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.toc" title="Permalink to this definition">¶</a></dt>
+<dd><p>prints elapsed time given reference time <em>t0</em> (obtained via <em>tic()</em>)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.writeTable">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">writeTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">colTitles</span></em>, <em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.writeTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>simple csv table writing function using Pandas</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>path: full path where to save csv</p>
+<p>colTitles: list of column titles, e.g. [‘col1’, ‘col2’]</p>
+<p>matrix: data to save; number of columns should equal len(colTitles)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pixelclassifier">
+<span id="pixelclassifier"></span><h1>pixelclassifier<a class="headerlink" href="#module-pixelclassifier" title="Permalink to this headline">¶</a></h1>
+<p>2D semantic segmentation</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pixelclassifier</span> <span class="k">as</span> <span class="nn">pc</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># -------------------------</span>
+<span class="c1"># train</span>
+
+<span class="n">trainPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;DataForPC/Train&#39;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainPath</span><span class="p">,</span><span class="n">sigmaDeriv</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">],</span><span class="n">sigmaLoG</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">])</span>
+
+<span class="n">pc</span><span class="o">.</span><span class="n">plotFeatImport</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;featImport&#39;</span><span class="p">],</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;featNames&#39;</span><span class="p">])</span>
+
+<span class="c1"># -------------------------</span>
+<span class="c1"># segment</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;DataForPC/Train/I00000_Img.tif&#39;</span><span class="p">)</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">im2double</span><span class="p">(</span><span class="n">tifread</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+<span class="n">C</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;classes&#39;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;probmaps&#39;</span><span class="p">)</span>
+
+<span class="n">imshowlist</span><span class="p">([</span><span class="n">I</span><span class="p">]</span><span class="o">+</span><span class="n">stack2list</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">+</span><span class="n">stack2list</span><span class="p">(</span><span class="n">P</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt id="pixelclassifier.classify">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">classify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">'classes'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>classifies pixels given an image and a trained model</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>model: trained model</p>
+<p>output: either ‘classes’ or ‘probmaps’; if ‘classes’, the output is a stack of planes
+containing masks for each class; if ‘probmaps’, the output is a stack of planes containing
+probabilities (numbers between 0 and 1) for pixels to belong to that class</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of masks or probability maps, depending on if output=’classes’ or output=’probmaps’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pixelclassifier.parseLabelFolder">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">parseLabelFolder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trainPath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.parseLabelFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>parses a folder of training data to return images, labels and metadata</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>trainPath: full path to folder containing training images and labels;
+note that each pair (image, label) should have the same name except for
+the last 8 characters, which should be ‘_Img.tif’ and ‘_Ant.tif’, respectively;
+a label is assumed to be an image of same size as the pairing image, of type
+uint8, where class 1 corresponds to pixels of intensity 1, class 2 to pixels
+of intensity 2, and so on; if there’s only one class, the function
+assumes the complement is class 2, and randomly samples it so that the number
+of pixels from class 1 and 2 are the same withing a label (annotation) image</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>nClasses: number of classes</p>
+<p>nSamples: total number of annotated pixels</p>
+<p>imList: list of images</p>
+<p>lbList: list of labels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pixelclassifier.plotFeatImport">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">plotFeatImport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fi</span></em>, <em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.plotFeatImport" title="Permalink to this definition">¶</a></dt>
+<dd><p>plots feature importances</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>fi: list of feature importances; these can be accessed from the model (output of train)
+via model[‘featImport’]</p>
+<p>fn: list of feature names; these can be accessed from the model (output of train)
+via model[‘featNames’]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>(none; a plot will be displayed)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pixelclassifier.rfcTrain">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">rfcTrain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.rfcTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>random forest classifier trainer</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>X: a matrix of nSamples x nFeatures containing image features</p>
+<p>Y: a matrix of nSamples x 1 containing labels</p>
+<p>params: a dictionary of parameters, as in metaDataDict returned by setupTraining</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>model: a dictionary containing the keys, values from params, in addicion to
+key ‘rfc’ paired with the random forest models, and key ‘featImport’ paired
+with feature importances (which can be used in plotFeatImport)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pixelclassifier.setupTraining">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">setupTraining</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nClasses</span></em>, <em class="sig-param"><span class="n">nSamples</span></em>, <em class="sig-param"><span class="n">imList</span></em>, <em class="sig-param"><span class="n">lbList</span></em>, <em class="sig-param"><span class="n">sigmaDeriv</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sigmaLoG</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">locStatsRad</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.setupTraining" title="Permalink to this definition">¶</a></dt>
+<dd><p>re-formats training data for training</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>nClasses: number of classes</p>
+<p>nSamples: number of annotated pixels</p>
+<p>imList: list of images</p>
+<p>lbList: list of labels (annotations)</p>
+<p>sigmaDeriv: sigma, or list of sigmas, for derivative features (computed via gpfunctions.imderivatives)</p>
+<p>sigmaLoG: sigma, or list of sigmas, for laplacian-of-gaussian features (computed via gpfunctions.imlogfilt)</p>
+<p>locStatRad: radius for local percentiles (computed via gpfunctions.localstats)</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>X: a matrix of nSamples x nFeatures containing image features</p>
+<p>Y: a matrix of nSamples x 1 containing labels</p>
+<p>metaDataDict: a dictionary with the following keys: nClasses, nFeatures (number of features),
+featNames (list of feature names), sigmaDeriv, sigmaLoG, locStatRad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pixelclassifier.train">
+<code class="sig-prename descclassname">pixelclassifier.</code><code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trainPath</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pixelclassifier.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>classifier training function</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>trainPath: path to folder contining images and labels (annotations)</p>
+<p>kwargs: extra optional parameters passed to setupTraining: sigmaDeriv, sigmaLoG, locStatsRad</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>model: same as the output of rfcTrain</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-voxelclassifier">
+<span id="voxelclassifier"></span><h1>voxelclassifier<a class="headerlink" href="#module-voxelclassifier" title="Permalink to this headline">¶</a></h1>
+<p>3D semantic segmentation</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">voxelclassifier</span> <span class="k">as</span> <span class="nn">vc</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">trainPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;DataForVC&#39;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainPath</span><span class="p">,</span><span class="n">sigmaDeriv</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">sigmaLoG</span><span class="o">=</span><span class="p">[],</span><span class="n">locStatsRad</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">vc</span><span class="o">.</span><span class="n">plotFeatImport</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;featImport&#39;</span><span class="p">],</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;featNames&#39;</span><span class="p">])</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;DataForVC/Drosophila_Img.tif&#39;</span><span class="p">)</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">im2double</span><span class="p">(</span><span class="n">tifread</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;probmaps&#39;</span><span class="p">)</span>
+
+<span class="n">tifwrite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="mi">255</span><span class="o">*</span><span class="n">P</span><span class="p">[:,:,:,</span><span class="mi">1</span><span class="p">]),</span><span class="s1">&#39;P1.tif&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt id="voxelclassifier.classify">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">classify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">'classes'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>classifies voxels given an image and a trained model</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>I: image</p>
+<p>model: trained model</p>
+<p>output: either ‘classes’ or ‘probmaps’; if ‘classes’, the output is a stack of volumes
+containing masks for each class; if ‘probmaps’, the output is a stack of volumes containing
+probabilities (numbers between 0 and 1) for voxels to belong to that class</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>stack of masks or probability maps, depending on if output=’classes’ or output=’probmaps’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="voxelclassifier.parseLabelFolder">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">parseLabelFolder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trainPath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.parseLabelFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>parses a folder of training data to return images, labels and metadata</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>trainPath: full path to folder containing training images and labels;
+note that each pair (image, label) should have the same name except for
+the last 8 characters, which should be ‘_Img.tif’ and ‘_Ant.tif’, respectively;
+a label is assumed to be an image of same size as the pairing image, of type
+uint8, where class 1 corresponds to voxels of intensity 1, class 2 to voxels
+of intensity 2, and so on; if there’s only one class, the function
+assumes the complement is class 2, and randomly samples it so that the number
+of voxels from class 1 and 2 are the same withing a label (annotation) image</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>nClasses: number of classes</p>
+<p>nSamples: total number of annotated voxels</p>
+<p>imList: list of images</p>
+<p>lbList: list of labels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="voxelclassifier.plotFeatImport">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">plotFeatImport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fi</span></em>, <em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.plotFeatImport" title="Permalink to this definition">¶</a></dt>
+<dd><p>plots feature importances</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>fi: list of feature importances; these can be accessed from the model (output of train)
+via model[‘featImport’]</p>
+<p>fn: list of feature names; these can be accessed from the model (output of train)
+via model[‘featNames’]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>(none; a plot will be displayed)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="voxelclassifier.rfcTrain">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">rfcTrain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.rfcTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>random forest classifier trainer</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>X: a matrix of nSamples x nFeatures containing image features</p>
+<p>Y: a matrix of nSamples x 1 containing labels</p>
+<p>params: a dictionary of parameters, as in metaDataDict returned by setupTraining</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>model: a dictionary containing the keys, values from params, in addicion to
+key ‘rfc’ paired with the random forest models, and key ‘featImport’ paired
+with feature importances (which can be used in plotFeatImport)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="voxelclassifier.setupTraining">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">setupTraining</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nClasses</span></em>, <em class="sig-param"><span class="n">nSamples</span></em>, <em class="sig-param"><span class="n">imList</span></em>, <em class="sig-param"><span class="n">lbList</span></em>, <em class="sig-param"><span class="n">sigmaDeriv</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sigmaLoG</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">sigmaSurf</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">locStatsRad</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.setupTraining" title="Permalink to this definition">¶</a></dt>
+<dd><p>re-formats training data for training</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>nClasses: number of classes</p>
+<p>nSamples: number of annotated voxels</p>
+<p>imList: list of images</p>
+<p>lbList: list of labels (annotations)</p>
+<p>sigmaDeriv: sigma, or list of sigmas, for derivative features (computed via gpfunctions.imderivatives3)</p>
+<p>sigmaLoG: sigma, or list of sigmas, for laplacian-of-gaussian features (computed via gpfunctions.imlogfilt)</p>
+<p>sigmaSurf: sigma, or list of sigmas, for surface features (computed via gpfunctions.imridgelikl)</p>
+<p>locStatRad: radius for local percentiles (computed via gpfunctions.localstats3)</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>X: a matrix of nSamples x nFeatures containing image features</p>
+<p>Y: a matrix of nSamples x 1 containing labels</p>
+<p>metaDataDict: a dictionary with the following keys: nClasses, nFeatures (number of features),
+featNames (list of feature names), sigmaDeriv, sigmaLoG, sigmaSurf, locStatRad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="voxelclassifier.train">
+<code class="sig-prename descclassname">voxelclassifier.</code><code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trainPath</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#voxelclassifier.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>classifier training function</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>trainPath: path to folder contining images and labels (annotations)</p>
+<p>kwargs: extra optional parameters passed to setupTraining: sigmaDeriv, sigmaLoG, sigmaSurf, locStatsRad</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>model: same as the output of rfcTrain</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PartitionOfImage">
+<span id="partitionofimage"></span><h1>PartitionOfImage<a class="headerlink" href="#module-PartitionOfImage" title="Permalink to this headline">¶</a></h1>
+<p>split/merge utilities to help processing large images; ‘overlapping patches’ version</p>
+<dl class="py class">
+<dt id="PartitionOfImage.PI2D">
+<em class="property">class </em><code class="sig-prename descclassname">PartitionOfImage.</code><code class="sig-name descname">PI2D</code><a class="headerlink" href="#PartitionOfImage.PI2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PartitionOfImage 2D</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PartitionOfImage</span> <span class="kn">import</span> <span class="n">PI2D</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">PI2D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;accumulate&#39;</span><span class="p">)</span>
+
+<span class="n">nChannels</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">PI2D</span><span class="o">.</span><span class="n">createOutput</span><span class="p">(</span><span class="n">nChannels</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PI2D</span><span class="o">.</span><span class="n">NumPatches</span><span class="p">):</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">getPatch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nChannels</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nChannels</span><span class="p">):</span>
+        <span class="n">Q</span><span class="p">[</span><span class="n">j</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">P</span>
+    <span class="n">PI2D</span><span class="o">.</span><span class="n">patchOutput</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+
+<span class="n">J</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">getValidOutput</span><span class="p">()</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:]</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">I</span><span class="o">-</span><span class="n">J</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
+
+<span class="n">K</span> <span class="o">=</span> <span class="n">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">),</span><span class="n">D</span><span class="p">)</span>
+<span class="n">imshow</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="PartitionOfImage.PI2D.createOutput">
+<code class="sig-name descname">createOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI2D.createOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates output image to store results of tile processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI2D.getPatch">
+<code class="sig-name descname">getPatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI2D.getPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the i-th patch for processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI2D.getValidOutput">
+<code class="sig-name descname">getValidOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI2D.getValidOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>recovers output without temporary padding added to manage tiling;
+thus the output has the same size as the input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI2D.patchOutput">
+<code class="sig-name descname">patchOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI2D.patchOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds result P of i-th tile processing to the output image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI2D.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patchSize</span></em>, <em class="sig-param"><span class="n">margin</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI2D.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize PI2D</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>image: 2D image to partition; if the image nas more than 1 channel,
+the channel dimension is assumed to be the 1st</p>
+<p>patchSize: size of square patch (tile)</p>
+<p>margin: half the amount of overlap between adjacent patches; margin should be
+an integer greater than 0 and smaller than patchSize</p>
+<p>mode: ‘replace’ or ‘accumulate’; if ‘replace’, tiling overwrites
+pixel values whenever there’s overlap; if ‘accumulate’, overlapping
+regions are interpolated during tiling, minimizing border artifacts</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="PartitionOfImage.PI3D">
+<em class="property">class </em><code class="sig-prename descclassname">PartitionOfImage.</code><code class="sig-name descname">PI3D</code><a class="headerlink" href="#PartitionOfImage.PI3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PartitionOfImage 3D</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PartitionOfImage</span> <span class="kn">import</span> <span class="n">PI3D</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">PI3D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;accumulate&#39;</span><span class="p">)</span>
+
+<span class="n">nChannels</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">PI3D</span><span class="o">.</span><span class="n">createOutput</span><span class="p">(</span><span class="n">nChannels</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PI3D</span><span class="o">.</span><span class="n">NumPatches</span><span class="p">):</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PI3D</span><span class="o">.</span><span class="n">getPatch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">nChannels</span><span class="p">,</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nChannels</span><span class="p">):</span>
+        <span class="n">Q</span><span class="p">[:,</span><span class="n">j</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">P</span>
+    <span class="n">PI3D</span><span class="o">.</span><span class="n">patchOutput</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+
+<span class="n">J</span> <span class="o">=</span> <span class="n">PI3D</span><span class="o">.</span><span class="n">getValidOutput</span><span class="p">()</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">J</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,:]</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">I</span><span class="o">-</span><span class="n">J</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
+
+<span class="n">pI</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="mi">64</span><span class="p">,:,:]</span>
+<span class="n">pJ</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="mi">64</span><span class="p">,:,:]</span>
+<span class="n">pD</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">64</span><span class="p">,:,:]</span>
+
+<span class="n">K</span> <span class="o">=</span> <span class="n">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">pI</span><span class="p">,</span><span class="n">pJ</span><span class="p">),</span><span class="n">pD</span><span class="p">)</span>
+<span class="n">imshow</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="PartitionOfImage.PI3D.createOutput">
+<code class="sig-name descname">createOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI3D.createOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates output image to store results of tile processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI3D.getPatch">
+<code class="sig-name descname">getPatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI3D.getPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the i-th patch for processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI3D.getValidOutput">
+<code class="sig-name descname">getValidOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI3D.getValidOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>recovers output without temporary padding added to manage tiling;
+thus the output has the same size as the input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI3D.patchOutput">
+<code class="sig-name descname">patchOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI3D.patchOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds result P of i-th tile processing to the output image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImage.PI3D.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patchSize</span></em>, <em class="sig-param"><span class="n">margin</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImage.PI3D.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize PI3D</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>image: 3D image to partition; if the image nas more than 1 channel,
+the channel dimension is assumed to be the 2nd, i.e. dimensions are:
+planes, channels, rows, columns</p>
+<p>patchSize: size of cubic patch (tile)</p>
+<p>margin: half the amount of overlap between adjacent patches; margin should be
+an integer greater than 0 and smaller than patchSize</p>
+<p>mode: ‘replace’ or ‘accumulate’; if ‘replace’, tiling overwrites
+voxel values whenever there’s overlap; if ‘accumulate’, overlapping
+regions are interpolated during tiling, minimizing border artifacts</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PartitionOfImageVC">
+<span id="partitionofimagevc"></span><h1>PartitionOfImageVC<a class="headerlink" href="#module-PartitionOfImageVC" title="Permalink to this headline">¶</a></h1>
+<p>split/merge utilities to help processing large images; ‘valid convolutions’ version;</p>
+<p>this ‘VC’ version of PartitionOfImage is ideal for processing tasks where the ouput is smaller than the
+input, as in convolutional networks where the convolution ouput is ‘valid’, as opposed to ‘same’</p>
+<dl class="py class">
+<dt id="PartitionOfImageVC.PI2D">
+<em class="property">class </em><code class="sig-prename descclassname">PartitionOfImageVC.</code><code class="sig-name descname">PI2D</code><a class="headerlink" href="#PartitionOfImageVC.PI2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PartitionOfImageVC 2D</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PartitionOfImageVC</span> <span class="kn">import</span> <span class="n">PI2D</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="n">imshowlist</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">imSize</span> <span class="o">=</span> <span class="mi">210</span>
+<span class="n">patchSize</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">margin</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">imSize</span><span class="p">,</span><span class="n">imSize</span><span class="p">))</span>
+<span class="n">I</span><span class="p">[</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">imSize</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">,</span><span class="n">imSize</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">)</span>
+
+<span class="n">PI2D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">patchSize</span><span class="p">,</span><span class="n">margin</span><span class="p">)</span>
+
+<span class="n">nChannels</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">PI2D</span><span class="o">.</span><span class="n">createOutput</span><span class="p">(</span><span class="n">nChannels</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PI2D</span><span class="o">.</span><span class="n">NumPatches</span><span class="p">):</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">getPatch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nChannels</span><span class="p">,</span><span class="n">PI2D</span><span class="o">.</span><span class="n">SubPatchSize</span><span class="p">,</span><span class="n">PI2D</span><span class="o">.</span><span class="n">SubPatchSize</span><span class="p">))</span>
+    <span class="c1"># Q = np.zeros((PI2D.SubPatchSize,PI2D.SubPatchSize))</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nChannels</span><span class="p">):</span>
+        <span class="n">Q</span><span class="p">[</span><span class="n">j</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">]</span>
+    <span class="c1"># Q[:,:] = P[margin:-margin,margin:-margin]</span>
+    <span class="n">PI2D</span><span class="o">.</span><span class="n">patchOutput</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+
+<span class="n">J</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">Output</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:]</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">I</span><span class="o">-</span><span class="n">J</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
+
+<span class="n">imshowlist</span><span class="p">([</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,</span><span class="n">D</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI2D.createOutput">
+<code class="sig-name descname">createOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI2D.createOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates output image to store results of tile processing;
+the output can be accessed at PI2D.Output</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI2D.getPatch">
+<code class="sig-name descname">getPatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI2D.getPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the i-th patch for processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI2D.patchOutput">
+<code class="sig-name descname">patchOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI2D.patchOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds result P of i-th tile processing to the output image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI2D.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patchSize</span></em>, <em class="sig-param"><span class="n">margin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI2D.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize PI2D</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>image: 2D image to partition; if the image nas more than 1 channel,
+the channel dimension is assumed to be the 1st</p>
+<p>patchSize: size of square patch (tile)</p>
+<p>margin: half the amount of overlap between adjacent patches; margin should be
+an integer greater than 0 and smaller than patchSize</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="PartitionOfImageVC.PI3D">
+<em class="property">class </em><code class="sig-prename descclassname">PartitionOfImageVC.</code><code class="sig-name descname">PI3D</code><a class="headerlink" href="#PartitionOfImageVC.PI3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PartitionOfImageVC 3D</p>
+<p><em>demo</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PartitionOfImageVC</span> <span class="kn">import</span> <span class="n">PI3D</span>
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="n">imshowlist</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">imSize</span> <span class="o">=</span> <span class="mi">210</span>
+<span class="n">patchSize</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">margin</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">imSize</span><span class="p">,</span><span class="n">imSize</span><span class="p">,</span><span class="n">imSize</span><span class="p">))</span>
+<span class="n">I</span><span class="p">[</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">imSize</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">,</span><span class="n">imSize</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">,</span><span class="n">imSize</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">)</span>
+
+<span class="n">PI3D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">patchSize</span><span class="p">,</span><span class="n">margin</span><span class="p">)</span>
+
+<span class="n">nChannels</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">PI3D</span><span class="o">.</span><span class="n">createOutput</span><span class="p">(</span><span class="n">nChannels</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PI3D</span><span class="o">.</span><span class="n">NumPatches</span><span class="p">):</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PI3D</span><span class="o">.</span><span class="n">getPatch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c1"># Q = np.zeros((PI3D.SubPatchSize,nChannels,PI3D.SubPatchSize,PI3D.SubPatchSize))</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">PI3D</span><span class="o">.</span><span class="n">SubPatchSize</span><span class="p">,</span><span class="n">PI3D</span><span class="o">.</span><span class="n">SubPatchSize</span><span class="p">,</span><span class="n">PI3D</span><span class="o">.</span><span class="n">SubPatchSize</span><span class="p">))</span>
+    <span class="c1"># for j in range(nChannels):</span>
+    <span class="c1">#     Q[:,j,:,:] = P[margin:-margin,margin:-margin,margin:-margin]</span>
+    <span class="n">Q</span><span class="p">[:,:,:]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">,</span><span class="n">margin</span><span class="p">:</span><span class="o">-</span><span class="n">margin</span><span class="p">]</span>
+    <span class="n">PI3D</span><span class="o">.</span><span class="n">patchOutput</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">Q</span><span class="p">)</span>
+
+<span class="n">J</span> <span class="o">=</span> <span class="n">PI3D</span><span class="o">.</span><span class="n">Output</span>
+<span class="c1"># J = J[:,0,:,:]</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">I</span><span class="o">-</span><span class="n">J</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
+
+<span class="n">pI</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">imSize</span><span class="o">/</span><span class="mi">2</span><span class="p">),:,:]</span>
+<span class="n">pJ</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">imSize</span><span class="o">/</span><span class="mi">2</span><span class="p">),:,:]</span>
+<span class="n">pD</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">imSize</span><span class="o">/</span><span class="mi">2</span><span class="p">),:,:]</span>
+
+<span class="kn">from</span> <span class="nn">gpfunctions</span> <span class="kn">import</span> <span class="n">imshowlist</span>
+<span class="n">imshowlist</span><span class="p">([</span><span class="n">pI</span><span class="p">,</span><span class="n">pJ</span><span class="p">,</span><span class="n">pD</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI3D.createOutput">
+<code class="sig-name descname">createOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI3D.createOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates output image to store results of tile processing;
+the output can be accessed at PI3D.Output</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI3D.getPatch">
+<code class="sig-name descname">getPatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI3D.getPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the i-th patch for processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI3D.patchOutput">
+<code class="sig-name descname">patchOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI3D.patchOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds result P of i-th tile processing to the output image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageVC.PI3D.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patchSize</span></em>, <em class="sig-param"><span class="n">margin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageVC.PI3D.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize PI3D</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>image: 3D image to partition; if the image nas more than 1 channel,
+the channel dimension is assumed to be the 2nd, i.e. dimensions are:
+planes, channels, rows, columns</p>
+<p>patchSize: size of cubic patch (tile)</p>
+<p>margin: half the amount of overlap between adjacent patches; margin should be
+an integer greater than 0 and smaller than patchSize</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-unet2D">
+<span id="unet2d"></span><h1>unet2D<a class="headerlink" href="#module-unet2D" title="Permalink to this headline">¶</a></h1>
+<p>pixel classifier via convolutional neural networks (U-Net)</p>
+<p>see <em>control panel</em> section of unet2D.py for instructions</p>
+</div>
+<div class="section" id="module-unet3D">
+<span id="unet3d"></span><h1>unet3D<a class="headerlink" href="#module-unet3D" title="Permalink to this headline">¶</a></h1>
+<p>voxel classifier via convolutional neural networks (U-Net)</p>
+<p>see <em>control panel</em> section of unet3D.py for instructions</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gpfunctions</a></li>
+<li><a class="reference internal" href="#module-pixelclassifier">pixelclassifier</a></li>
+<li><a class="reference internal" href="#module-voxelclassifier">voxelclassifier</a></li>
+<li><a class="reference internal" href="#module-PartitionOfImage">PartitionOfImage</a></li>
+<li><a class="reference internal" href="#module-PartitionOfImageVC">PartitionOfImageVC</a></li>
+<li><a class="reference internal" href="#module-unet2D">unet2D</a></li>
+<li><a class="reference internal" href="#module-unet3D">unet3D</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PuBliCiTy  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">gpfunctions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Marcelo Cicconet.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

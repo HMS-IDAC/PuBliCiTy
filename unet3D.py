@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = True
+restoreVariables = False
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
@@ -18,11 +18,11 @@ train = False
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = True
+test = False
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = True
+deploy = False
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
