@@ -7,6 +7,8 @@ Dependencies:
 	pip install scikit-learn
 	pip install tensorflow (batch normalization not working in 2D with GPU)
 
+Upgrading code to TensorFlow 2:
+	https://www.tensorflow.org/guide/upgrade
 
 Building documentation:
 	https://medium.com/@richdayandnight/a-simple-tutorial-on-how-to-document-your-python-project-using-sphinx-and-rinohtype-177c22a15b5b
