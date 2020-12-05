@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = False
+restoreVariables = True
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
@@ -18,11 +18,11 @@ train = False
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = False
+test = True
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = False
+deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
@@ -99,8 +99,8 @@ nEpochs = 20
 import numpy as np
 import os, shutil, sys
 
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
 from tensorflow.keras.layers import Dense, Conv2D, Conv2DTranspose, UpSampling2D, MaxPooling2D, Flatten, concatenate, Cropping2D, Activation, BatchNormalization
 from tensorflow.keras import Input, Model
@@ -154,10 +154,10 @@ def getBatch(n,dataset='train'):
 # https://lmb.informatik.uni-freiburg.de/Publications/2019/FMBCAMBBR19/paper-U-Net.pdf
 
 x = Input((imSize,imSize,nChannels))
-t = tf.placeholder(tf.bool)
+t = tf.compat.v1.placeholder(tf.bool)
 ccidx = []
 
-hidden = [tf.to_float(x)]
+hidden = [tf.cast(x, dtype=tf.float32)]
 hidden.append(BatchNormalization()(hidden[-1], training=t))
 print('layer',len(hidden)-1,':',hidden[-1].shape,'input')
 
@@ -234,41 +234,41 @@ cropSize = y.shape[1]
 l = []
 # nl = []
 for iClass in range(nClasses):
-    labels0 = tf.reshape(tf.to_int32(tf.slice(y,[0,0,0,iClass],[-1,-1,-1,1])),[batchSize,cropSize,cropSize])
-    predict0 = tf.reshape(tf.to_int32(tf.equal(tf.argmax(sm,3),iClass)),[batchSize,cropSize,cropSize])
+    labels0 = tf.reshape(tf.cast(tf.slice(y,[0,0,0,iClass],[-1,-1,-1,1]), dtype=tf.int32),[batchSize,cropSize,cropSize])
+    predict0 = tf.reshape(tf.cast(tf.equal(tf.argmax(input=sm,axis=3),iClass), dtype=tf.int32),[batchSize,cropSize,cropSize])
     correct = tf.multiply(labels0,predict0)
-    nCorrect0 = tf.reduce_sum(correct)
-    nLabels0 = tf.reduce_sum(labels0)
-    l.append(tf.to_float(nCorrect0)/tf.to_float(nLabels0))
+    nCorrect0 = tf.reduce_sum(input_tensor=correct)
+    nLabels0 = tf.reduce_sum(input_tensor=labels0)
+    l.append(tf.cast(nCorrect0, dtype=tf.float32)/tf.cast(nLabels0, dtype=tf.float32))
     # nl.append(nLabels0)
 acc = tf.add_n(l)/nClasses
 
-loss = -tf.reduce_sum(tf.multiply(y,tf.log(sm)))
-updateOps = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-optimizer = tf.train.AdamOptimizer(learningRate)
+loss = -tf.reduce_sum(input_tensor=tf.multiply(y,tf.math.log(sm)))
+updateOps = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
+optimizer = tf.compat.v1.train.AdamOptimizer(learningRate)
 with tf.control_dependencies(updateOps):
     optOp = optimizer.minimize(loss)
 
 
 if train:
-    tf.summary.scalar('loss', loss)
-    tf.summary.scalar('acc', acc)
-    mergedsmr = tf.summary.merge_all()
+    tf.compat.v1.summary.scalar('loss', loss)
+    tf.compat.v1.summary.scalar('acc', acc)
+    mergedsmr = tf.compat.v1.summary.merge_all()
 
     if os.path.exists(logDir):
         shutil.rmtree(logDir)
 
-    writer = tf.summary.FileWriter(pathjoin(logDir, 'train'))
-    writer2 = tf.summary.FileWriter(pathjoin(logDir, 'valid'))
+    writer = tf.compat.v1.summary.FileWriter(pathjoin(logDir, 'train'))
+    writer2 = tf.compat.v1.summary.FileWriter(pathjoin(logDir, 'valid'))
 
 
-sess = tf.Session()
-saver = tf.train.Saver()
+sess = tf.compat.v1.Session()
+saver = tf.compat.v1.train.Saver()
 
 if restoreVariables:
     saver.restore(sess, modelPathIn)
 else:
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
 
 def imageToProbMapsWithPI2D(I):
