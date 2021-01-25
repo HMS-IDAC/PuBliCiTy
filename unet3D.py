@@ -26,13 +26,13 @@ deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_In/I00000_Img.tif'
+deployImagePathIn = 'DataForVC/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_In'
+deployFolderPathIn = 'DataForVC/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
 
-deployFolderPathOut = '/home/cicconet/Development/PuBliCiTy/DataForVC/Deploy_Out'
+deployFolderPathOut = 'DataForVC/Deploy_Out'
 # folder path where outputs of prediction (probability maps) are saved;
 # the script ads _PMs to the respective input image name when naming the output
 
@@ -46,10 +46,10 @@ nClasses = 2
 batchSize = 4
 # batch size
 
-modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
+modelPathIn = 'Models/unet3D_v0.ckpt'
 # input model path to recover model from (when restoreVariables = True)
 
-modelPathOut ='/home/cicconet/Development/PuBliCiTy/Models/unet3D_v0.ckpt'
+modelPathOut ='Models/unet3D_v0.ckpt'
 # path where to save model
 
 reSplitTrainSet = False
@@ -59,21 +59,21 @@ reSplitTrainSet = False
 # otherwise set to false, so that the training and validation sets are consistent throughout multiple
 # runs of training when restoreVariables = True
 
-trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit3D.data'
+trainSetSplitPath = 'Models/trainSetSplit3D.data'
 # where to save training/validation split information (only indices are saved)
 
-logDir = '/home/cicconet/Development/PuBliCiTy/Logs/unet3D'
+logDir = 'Logs/unet3D'
 # path to folder where to save data for real-time visualization during training via tensorboard
 
-logPath = '/home/cicconet/Development/PuBliCiTy/Logs/unet3D_TestSample.tif'
+logPath = 'Logs/unet3D_TestSample.tif'
 # path where to save prediction on a random image from imPathTest (see below) during training
 
-imPath = '/home/cicconet/Development/PuBliCiTy/DataForVC/Train_60'# path to folder containing training/validation set;
+imPath = 'DataForVC/Train_60'# path to folder containing training/validation set;
 # images should be of size imSize x imSize x imSize, named I%05d_Img.tif,
 # and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
 # where pixels of class 1,2,... have intensity value 1,2,... respectivelly
 
-imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForVC/Test'
+imPathTest = 'DataForVC/Test'
 # path to folder containing images for testing;
 # the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
 # for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif

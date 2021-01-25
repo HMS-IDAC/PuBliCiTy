@@ -8,15 +8,16 @@
     from gpfunctions import *
     import os
 
-    trainPath = os.path.abspath('DataForVC')
+    trainPath = os.path.abspath('DataForVC/Train')
     model = vc.train(trainPath,sigmaDeriv=[2],sigmaLoG=[],locStatsRad=0)
     vc.plotFeatImport(model['featImport'],model['featNames'])
 
-    path = os.path.abspath('DataForVC/Drosophila_Img.tif')
+    path = os.path.abspath('DataForVC/Train/Mitochondria_Img.tif')
     I = im2double(tifread(path))
     P = vc.classify(I,model,output='probmaps')
 
-    tifwrite(np.uint8(255*P[:,:,:,1]),'P1.tif')
+    pln = 150
+    imshowlist([I[pln,:,:], P[pln,:,:,0], P[pln,:,:,1]])
 """
 
 from gpfunctions import *

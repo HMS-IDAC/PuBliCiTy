@@ -26,13 +26,13 @@ deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In/I00000_Img.tif'
+deployImagePathIn = 'DataForPC/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-deployFolderPathIn = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_In'
+deployFolderPathIn = 'DataForPC/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
 
-deployFolderPathOut = '/home/cicconet/Development/PuBliCiTy/DataForPC/Deploy_Out'
+deployFolderPathOut = 'DataForPC/Deploy_Out'
 # folder path where outputs of prediction (probability maps) are saved;
 # the script ads _PMs to the respective input image name when naming the output
 
@@ -49,10 +49,10 @@ nChannels = 1
 batchSize = 32
 # batch size
 
-modelPathIn = '/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
+modelPathIn = 'Models/unet2D_v0.ckpt'
 # input model path to recover model from (when restoreVariables = True)
 
-modelPathOut ='/home/cicconet/Development/PuBliCiTy/Models/unet2D_v0.ckpt'
+modelPathOut ='Models/unet2D_v0.ckpt'
 # path where to save model
 
 reSplitTrainSet = False
@@ -62,22 +62,22 @@ reSplitTrainSet = False
 # otherwise set to false, so that the training and validation sets are consistent throughout multiple
 # runs of training when restoreVariables = True
 
-trainSetSplitPath = '/home/cicconet/Development/PuBliCiTy/Models/trainSetSplit2D.data'
+trainSetSplitPath = 'Models/trainSetSplit2D.data'
 # where to save training/validation split information (only indices are saved)
 
-logDir = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D'
+logDir = 'Logs/unet2D'
 # path to folder where to save data for real-time visualization during training via tensorboard
 
-logPath = '/home/cicconet/Development/PuBliCiTy/Logs/unet2D_TestSample.tif'
+logPath = 'Logs/unet2D_TestSample.tif'
 # path where to save prediction on a random image from imPathTest (see below) during training
 
-imPath = '/home/cicconet/Development/PuBliCiTy/DataForPC/Train_60'
+imPath = 'DataForPC/Train_60'
 # path to folder containing training/validation set;
 # images should be of size nChannels x imSize x imSize, named I%05d_Img.tif,
 # and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
 # where pixels of class 1,2,... have intensity value 1,2,... respectivelly
 
-imPathTest = '/home/cicconet/Development/PuBliCiTy/DataForPC/Test'
+imPathTest = 'DataForPC/Test'
 # path to folder containing images for testing;
 # the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
 # for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif
@@ -105,7 +105,7 @@ tf.compat.v1.disable_eager_execution()
 from tensorflow.keras.layers import Dense, Conv2D, Conv2DTranspose, UpSampling2D, MaxPooling2D, Flatten, concatenate, Cropping2D, Activation, BatchNormalization
 from tensorflow.keras import Input, Model
 
-os.environ['CUDA_VISIBLE_DEVICES']=''
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 from gpfunctions import *
