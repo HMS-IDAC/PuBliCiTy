@@ -7,6 +7,12 @@ Dependencies:
 	pip install scikit-learn
 	pip install tensorflow (batch normalization not working in 2D with GPU)
 
+	(the following worked on idac machine with python 3.6)
+	conda install -c anaconda tensorflow-gpu
+
+	(for remote work)
+	conda install -c conda-forge jupyterlab
+
 Upgrading code to TensorFlow 2:
 	https://www.tensorflow.org/guide/upgrade
 
