@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'PuBliCiTy'
-copyright = '2020, Marcelo Cicconet'
+project = 'Python Bio-image Computing Toolkit (PuBliCiTy)'
+copyright = '2021 - President and Fellows of Harvard College. All rights reserved.'
 author = 'Marcelo Cicconet'
 
 
