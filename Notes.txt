@@ -13,6 +13,13 @@ Dependencies:
 	(for remote work)
 	conda install -c conda-forge jupyterlab
 
+	(for webapp)
+	conda install -c anaconda flask
+	conda install -c conda-forge flask-socketio
+	conda install -c anaconda gevent
+	conda install -c anaconda gevent-websocket
+
+
 Upgrading code to TensorFlow 2:
 	https://www.tensorflow.org/guide/upgrade
 

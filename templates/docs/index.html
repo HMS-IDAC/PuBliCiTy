@@ -1,0 +1,178 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>PuBliCiTyWebApp Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../static/styledocs.css">
+</head>
+
+<body>
+
+<!-- <hr> -->
+
+<p>
+	<h1>PuBliCiTyWebApp | Documentation</h1>
+</p>
+
+<br>
+
+<p>
+	<h2>Conventions</h2>
+</p>
+
+<p>
+    this is how regular text looks like
+</p>
+
+<p>
+<prpt>this is how  prompt instructions  look like</prpt><br>prompt instructions are to be typed in the <em>prompt box</em>, at the top left
+of the main window
+</p>
+
+<p>
+a <em>bot</em> is a simple assistant that guides the user through a sequence of analysis or processing steps by asking questions
+</p>
+
+<p>
+a <em>tool</em> is a colection of widgets (e.g. sliders, buttons, menus) that control the parameters of analysis or processing operations; a tool, when triggered, shows up at the bottom left of the main window
+</p>
+
+
+
+<br>
+
+<p>
+    <h2>Prompt Instructions</h2>
+</p>
+
+
+<p><prpt>annotate</prpt><br>triggers the annotation bot, which leads to the annotation tool; annotations are used to train a machine learning model for image segmentation (pixel classification)</p>
+
+<p><prpt>blur</prpt><br>triggers the gaussian blur bot, which performs gaussian filtering</p>
+
+<p><prpt>clear dialog</prpt><br>clears the dialog history</p>
+
+<!-- <p><prpt>clear mask</prpt></p> -->
+
+<p><prpt>derivatives</prpt><br>triggers a bot to compute image derivatives (up to second order)</p>
+
+<!-- <p><prpt>dismiss tool</prpt></p> -->
+
+<p><prpt>download annotations</prpt><br>downloads the set of pairs [image, annotations]</p>
+
+<p><prpt>download current image</prpt><br>does exactly what it implies</p>
+
+<p><prpt>edit annotations</prpt><br>triggers the annotation editing bot; this can be used to refine annotations previously saved</p>
+
+<p><prpt>extract channel</prpt><br>allows to extract a channel form a multi-channel image</p>
+
+<p><prpt>extract plane</prpt><br>allows to extract a plane from a multi-plane image</p>
+
+<p><prpt>gradient magnitude</prpt><br>allows to compute gradient magnitudes, which highlight edges</p>
+
+<p><prpt>image properties</prpt><br>displays some image properties</p>
+
+<p><prpt>load annotations from server</prpt><br>loads annotations previously saved in the server</p>
+
+<p><prpt>load ml model from server</prpt><br>loads a machine learning model previously saved in the server</p>
+
+<p><prpt>log</prpt><br>triggers the laplacian of gaussian bot; this is useful to highlight spots</p>
+
+<p><prpt>maximum filter</prpt><br>triggers a bot to compute local maxima</p>
+
+<p><prpt>median filter</prpt><br>triggers a bot to compute local medians</p>
+
+<p><prpt>minimum filter</prpt><br>triggers a bot to compute local minima</p>
+
+<p><prpt>ml probability maps</prpt><br>computes probability maps for a loaded machine learning model</p>
+
+<p><prpt>new image</prpt><br>triggers a bot to upload new images from a client computer</p>
+
+<p><prpt>new image from server</prpt><br>triggers a bot to load new images already saved in the server</p>
+
+<p><prpt>reset image</prpt><br>returns the image to its original state, before any processing</p>
+
+<p><prpt>save annotations to server</prpt><br>does exactly what it implies</p>
+
+<p><prpt>save current image to server</prpt><br>does exactly what it implies</p>
+
+<p><prpt>save ml model to server</prpt><br>saves trained machine learning model to server</p>
+
+<p><prpt>segment</prpt><br>triggers the image segmentation (pixel classification) bot</p>
+
+<p><prpt>train ml segmenter</prpt><br>triggers the machine learning training tool</p>
+
+<br>
+
+<p>
+    <h2>Examples</h2>
+</p>
+
+<p>
+    <h3>Simple Segmentation</h3>
+</p>
+
+<p>
+    .: <prpt>new image from server</prpt><br>
+    .: enter image index<br>
+    .: <prpt>segment</prpt><br>
+    .: enter '1'<br>
+    .: set parameters and click/tap on 'Compute'<br>
+    .: change parameters, if needed, then click/tap again on 'Compute'<br>
+    .: to generate a segmentation mask, click/tap on 'Done'
+</p>
+
+<p>
+    <h3>Annotate Images with 2 Classes of Pixels</h3>
+</p>
+
+<p>
+    .: <prpt>new image from server</prpt><br>
+    .: enter image index<br>
+    .: <prpt>annotate</prpt><br>
+    .: enter '2'<br>
+    .: annotate two different areas of the image as 'Class 1' and 'Class 2'; change between draw, move, and zoom modes using the icons on top of the image area<br>
+    .: click/tap on Save Masks<br>
+</p>
+
+<p>
+    <h3>Store Annotations for Later Use</h3>
+</p>
+
+<p>
+    .: annotate one or several images, making sure the number of classes is the same<br>
+    .: <prpt>save annotations to server</prpt><br>
+    .: follow instructions
+</p>
+
+<p>
+    <h3>Load, Edit, Re-Save Annotations</h3>
+</p>
+
+<p>
+    .: <prpt>load annotations from server</prpt><br>
+    .: enter annotations index<br>
+    .: <prpt>edit annotations</prpt><br>
+    .: enter index of annotated image to edit<br>
+    .: edit annotations, then click/tap on 'Save Masks'<br>
+    .: <prpt>save annotations to server</prpt><br>
+    .: enter folder name; it can be the same as the one you loaded -- this will overwrite the previous annotation set with the edited one; if you use a different folder name, the previous annotations (before edit) will be kept under the previous folder name
+</p>
+
+<p>
+    <h3>Train a Machine Learning Model to Segment Images, and Segment Image Using Model</h3>
+</p>
+
+<p>
+    .: either annotate images or load annotations<br>
+    .: <prpt>train ml segmenter</prpt><br>
+    .: configure segmentation tool, then click/tap on 'Train'<br>
+    .: when training is done, load image to be segmented (if not yet loaded); it should be similar to the annotated images<br>
+    .: <prpt>segment</prpt><br>
+    .: enter '2'<br>
+    .: configure parameters, then click/tap 'Compute'; repeat if needed<br>
+    .: to generate a segmentation mask, click/tap on 'Done'
+</p>
+
+</body>
+</html>
