@@ -1,4 +1,6 @@
 Dependencies:
+	(note: developed using env with Python 3.6)
+
 	conda install -c conda-forge opencv
 	conda install -c anaconda matplotlib
 	pip install tifffile

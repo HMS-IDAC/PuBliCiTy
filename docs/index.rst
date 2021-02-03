@@ -46,18 +46,18 @@ PartitionOfImageVC
    :members:
 
 
-.. unet2D
-.. ==================
+unet2D
+==================
 
-.. .. automodule:: unet2D
-..    :members:
+.. automodule:: unet2D
+   :members:
 
 
-.. unet3D
-.. ==================
+unet3D
+==================
 
-.. .. automodule:: unet3D
-..    :members:
+.. automodule:: unet3D
+   :members:
 
 
 .. Indices and tables
