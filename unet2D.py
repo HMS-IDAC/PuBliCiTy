@@ -93,7 +93,7 @@ learningRate = 0.00001
 nEpochs = 20
 # number of epochs
 
-useGPU = False
+useGPU = True
 # if to use GPU or not
 
 
