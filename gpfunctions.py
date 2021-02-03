@@ -1889,11 +1889,8 @@ def bwInterpSingleObjectMasks(I, J, a):
     I = np.uint8(I)
     J = np.uint8(J)
 
-    # _, contoursI, hierarchyI = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # _, contoursJ, hierarchyJ = cv2.findContours(J, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    contoursI, hierarchyI = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contoursJ, hierarchyJ = cv2.findContours(J, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contoursI, hierarchyI = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contoursJ, hierarchyJ = cv2.findContours(J, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     contI0 = np.squeeze(contoursI[0])
     contJ0 = np.squeeze(contoursJ[0])

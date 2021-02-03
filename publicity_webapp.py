@@ -25,13 +25,13 @@ socketio = SocketIO(app, async_mode='threading')
 # https://flask-socketio.readthedocs.io/en/latest/#version-compatibility
 # https://cdnjs.com/libraries/socket.io (see line 15 in index.html)
 
-MAIN_FOLDER = '/home/cicconet/Data/FlaskServer'
 devMode = False # set to True during development to deploy to 'localhost' (but see note at bottom under 'if __name__ == '__main__'')
 
 mainIA = IA()
 mainDL = DL()
-mainIA.username = 'Marcelo'
-mainIA.setupDirectories(MAIN_FOLDER)
+
+MAIN_FOLDER = 'Server'
+mainIA.username = 'User'
 
 def randString():
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
@@ -125,6 +125,7 @@ def client2ServerMessage(message):
     if message == 'socket echo test':
         emit('server2ClientMessage', message)
     elif message == 'initialize':
+        mainIA.setupDirectories(MAIN_FOLDER)
         emit('server2ClientMessage', 'server initialized')
     elif message[:17] == 'create label mask':
         mainIA.maskType = 'labelMask'
