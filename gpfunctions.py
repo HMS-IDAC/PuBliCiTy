@@ -15,6 +15,7 @@ import numpy as np
 from skimage import io as skio
 from scipy.ndimage import *
 from scipy.signal import convolve
+from scipy.ndimage.morphology import binary_fill_holes
 from skimage.morphology import *
 from skimage import transform as trfm
 from skimage.exposure import equalize_hist, equalize_adapthist, adjust_gamma
@@ -676,6 +677,19 @@ def imrotate(im,angle):
     """
 
     return trfm.rotate(im,angle)
+
+def imfillholes(I):
+    """
+    binary fill holes
+
+    *inputs*:
+        I: binary image
+
+    *output:*
+        binary filled image
+    """
+
+    return binary_fill_holes(I)
 
 def imerode(I,r):
     """
@@ -2051,3 +2065,133 @@ def splitIntoTiles3D(pathIn, pathOut):
 
                         block_I = np.copy(I[i:i+60, j:j+60, k:k+60])
                         tifwrite(block_I, pathjoin(pathOut, 'I%05d_Img.tif' % count))
+
+
+def boxes_IoU(box_a, box_b):
+    """
+    computes the intersection over union coefficient for boxes
+
+    *inputs:*
+        box_a, box_b: box coordinate lists [xmin, ymin, xmax, ymax]
+
+    *output:*
+        area of intersection divided by area of union
+    """
+
+    xmin_a, ymin_a, xmax_a, ymax_a = box_a
+    xmin_b, ymin_b, xmax_b, ymax_b = box_b
+
+    min_ymax = np.minimum(ymax_a, ymax_b)
+    max_ymin = np.maximum(ymin_a, ymin_b)
+    min_xmax = np.minimum(xmax_a, xmax_b)
+    max_xmin = np.maximum(xmin_a, xmin_b)
+
+    x_intersection = np.maximum(min_xmax-max_xmin, 0)
+    y_intersection = np.maximum(min_ymax-max_ymin, 0)
+    
+    area_intersection = x_intersection*y_intersection
+    area_a = (xmax_a-xmin_a)*(ymax_a-ymin_a)
+    area_b = (xmax_b-xmin_b)*(ymax_b-ymin_b)
+    area_union = area_a+area_b-area_intersection
+
+    if area_union == 0:
+        return 0.0
+
+    return area_intersection/area_union
+
+def boxes_intersect(box_a, box_b):
+    """
+    checks if two boxes intersect
+
+    *inputs:*
+        box_a, box_b: box coordinate lists [xmin, ymin, xmax, ymax]
+
+    *output:*
+        True if boxes intersect, otherwise False
+    """
+
+    xmin_a, ymin_a, xmax_a, ymax_a = box_a
+    xmin_b, ymin_b, xmax_b, ymax_b = box_b
+
+    min_ymax = np.minimum(ymax_a, ymax_b)
+    max_ymin = np.maximum(ymin_a, ymin_b)
+    min_xmax = np.minimum(xmax_a, xmax_b)
+    max_xmin = np.maximum(xmin_a, xmin_b)
+
+    x_intersection = np.maximum(min_xmax-max_xmin, 0)
+    y_intersection = np.maximum(min_ymax-max_ymin, 0)
+    
+    return x_intersection*y_intersection > 0
+
+def masks_IoU(mask_a, mask_b):
+    """
+    computes the intersection over union coefficient for masks
+
+    *inputs:*
+        mask_a, mask_b: masks (binary images of the same size)
+
+    *output:*
+        area of intersection divided by area of union
+    """
+
+    area_intersection = np.sum(mask_a*mask_b)
+    area_union = np.sum(mask_a)+np.sum(mask_b)-area_intersection
+    
+    if area_union == 0:
+        return 0.0
+
+    return area_intersection/area_union
+
+def labels_to_boxes_and_contours(label_image):
+    """
+    finds object bounding boxes and contours from label image
+
+    *input:*
+        label image
+
+    *outputs:*
+        boxes: list of boxes where each box is a list [xmin, ymin, xmax, ymax]
+
+        contours: (n,2) array of (row, col) locations of contour points
+    """
+
+    obj_ids = np.unique(label_image)
+    obj_ids = obj_ids[1:]
+
+    masks = label_image == obj_ids[:, None, None]
+
+    num_objs = len(obj_ids)
+    boxes = []
+    contours = []
+    for i in range(num_objs):
+        mi = masks[i]
+        pos = np.where(mi)
+        xmin = np.min(pos[1])
+        xmax = np.max(pos[1])
+        ymin = np.min(pos[0])
+        ymax = np.max(pos[0])
+        boxes.append([xmin, ymin, xmax, ymax])
+
+        F = np.zeros(mi.shape, dtype=bool)
+        F[0,:] = True; F[-1,:] = True; F[:,0] = True; F[:,-1] = True
+        F = np.logical_and(F, mi)
+        CT = np.logical_and(mi, np.logical_not(imerode(mi,1)))
+        CT = np.logical_or(CT, F)
+        ct = np.argwhere(CT)
+
+        contours.append(ct)
+        
+    return boxes, contours
+
+def mask2label(mask):
+    """
+    labels individual objects in binary mask
+
+    *input:*
+        mask: binary mask
+
+    *output:*
+        image where each object has pixels of identical, unique value
+    """
+
+    return label(mask)

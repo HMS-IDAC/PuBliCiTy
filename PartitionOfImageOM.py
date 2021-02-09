@@ -5,28 +5,6 @@ split/merge utilities to help processing large images; 'object masks' version
 import numpy as np
 from gpfunctions import *
 
-def bb_IoU(box_a, box_b):
-    xmin_a, ymin_a, xmax_a, ymax_a = box_a
-    xmin_b, ymin_b, xmax_b, ymax_b = box_b
-
-    min_ymax = np.minimum(ymax_a, ymax_b)
-    max_ymin = np.maximum(ymin_a, ymin_b)
-    min_xmax = np.minimum(xmax_a, xmax_b)
-    max_xmin = np.maximum(xmin_a, xmin_b)
-
-    x_intersection = np.maximum(min_xmax-max_xmin, 0)
-    y_intersection = np.maximum(min_ymax-max_ymin, 0)
-    
-    area_intersection = x_intersection*y_intersection
-    area_a = (xmax_a-xmin_a)*(ymax_a-ymin_a)
-    area_b = (xmax_b-xmin_b)*(ymax_b-ymin_b)
-    area_union = area_a+area_b-area_intersection
-
-    if area_union == 0:
-        return 0.0
-
-    return area_intersection/area_union
-
 class PI2D:
     """
     PartitionOfImage 2D
@@ -34,31 +12,36 @@ class PI2D:
     *demo:*
     ::
 
-        from PartitionOfImage import PI2D
-        import numpy as np
-        from gpfunctions import *
+        im_side = 300
+        n_circs = 30
+        rad_min = 5
+        rad_max = 10
+        suggested_patch_size = 100
+        margin = 50
 
-        I = np.random.rand(128,128)
-        PI2D.setup(I,64,4,'accumulate')
+        prm = np.arange(im_side)
+        x, y = np.meshgrid(prm, prm)
+        M = np.zeros((im_side, im_side))
 
-        nChannels = 2
-        PI2D.createOutput(nChannels)
+        c_rows = np.random.randint(im_side, size=n_circs)
+        c_cols = np.random.randint(im_side, size=n_circs)
+        rads = np.random.randint(rad_min, rad_max, size=n_circs)
+
+        for i in range(n_circs):
+            mask = np.sqrt((x-c_rows[i])**2+(y-c_cols[i])**2) < rads[i]
+            M[mask] = 1
+
+        PI2D.setup(np.double(M), suggested_patch_size, margin)
 
         for i in range(PI2D.NumPatches):
             P = PI2D.getPatch(i)
-            Q = np.zeros((nChannels,P.shape[0],P.shape[1]))
-            for j in range(nChannels):
-                Q[j,:,:] = P
-            PI2D.patchOutput(i,Q)
+            bbs, cts = labels_to_boxes_and_contours(mask2label(P > 0))
+            PI2D.patchOutput(i, bbs, cts)
 
-        J = PI2D.getValidOutput()
-        J = J[0,:,:]
+        PI2D.prepareOutput()
+        Output = PI2D.Output
 
-        D = np.abs(I-J)
-        print(np.max(D))
-
-        K = cat(1,cat(1,I,J),D)
-        imshow(K)
+        imshowlist([PI2D.OutputRaw, Output])
     """
 
     Image = None
@@ -79,8 +62,7 @@ class PI2D:
         initialize PI2D
 
         *inputs:*
-            image: 2D image to partition; if the image nas more than 1 channel,
-            the channel dimension is assumed to be the 1st
+            image: 2D image to partition; assumed double, single channel, in range [0, 1]
 
             suggestedPatchSize: suggested size of square patch (tile);
             actual patch sizes may vary depending on image size
@@ -141,7 +123,7 @@ class PI2D:
         r0,r1,c0,c1 = PI2D.PC[i]
         for idx in range(len(bbs)):
             xmin, ymin, xmax, ymax = bbs[idx] # x: cols; y: rows
-            ct = np.array(cts[idx])
+            ct = cts[idx]#np.array(cts[idx])
             
             for row in range(ymin,ymax+1):
                 PI2D.OutputRaw[r0+row, c0+xmin] = 0.5
@@ -166,14 +148,33 @@ class PI2D:
                 did_find_redundancy = False
                 for index_box in range(len(PI2D.Boxes)):
                     box = PI2D.Boxes[index_box]
-                    if bb_IoU(candidate_box, box) > 0:
-                        candidate_area = (xmax-xmin)*(ymax-ymin)
-                        area = (box[2]-box[0])*(box[3]-box[1])
-                        if candidate_area > area:
-                            PI2D.Boxes[index_box] = candidate_box
-                            PI2D.Contours[index_box] = candidate_contour
-                        did_find_redundancy = True
-                        break
+                    if boxes_intersect(candidate_box, box):
+                        contour = PI2D.Contours[index_box]
+
+                        cc = np.concatenate((candidate_contour, contour), axis=0)
+                        cc_min_r, cc_min_c = np.min(cc, axis=0)
+                        cc_max_r, cc_max_c = np.max(cc, axis=0)
+
+                        cc_box_a = np.zeros((cc_max_r-cc_min_r+1, cc_max_c-cc_min_c+1), dtype=bool)
+                        cc_box_b = np.copy(cc_box_a)
+
+                        for idx_c in range(candidate_contour.shape[0]):
+                            cc_box_a[candidate_contour[idx_c,0]-cc_min_r,candidate_contour[idx_c,1]-cc_min_c] = True
+
+                        for idx_c in range(contour.shape[0]):
+                            cc_box_b[contour[idx_c,0]-cc_min_r,contour[idx_c,1]-cc_min_c] = True
+
+                        cc_box_a = imfillholes(cc_box_a)
+                        cc_box_b = imfillholes(cc_box_b)
+
+                        if np.sum(cc_box_a*cc_box_b) > 0:
+                            candidate_area = np.sum(cc_box_a)
+                            area = np.sum(cc_box_b)
+                            if candidate_area > area:
+                                PI2D.Boxes[index_box] = candidate_box
+                                PI2D.Contours[index_box] = candidate_contour
+                            did_find_redundancy = True
+                            break
                 if not did_find_redundancy:
                     PI2D.Boxes.append(candidate_box)
                     PI2D.Contours.append(candidate_contour)
@@ -184,7 +185,9 @@ class PI2D:
 
     def prepareOutput():
         """
-        recovers output with resolved intersections in overlapping areas
+        computes output with resolved intersections in overlapping areas
+        which is accessible at PI2D.Output; the output with unresolved
+        intersections is accessible at PI2D.OutputRaw
         """
 
         boxes = PI2D.Boxes
@@ -203,24 +206,33 @@ class PI2D:
                 PI2D.Output[rc[0],rc[1]] = 1
 
     def demo():
-        I = np.random.rand(128,128)
-        PI2D.setup(I,64,4,'accumulate')
+        im_side = 300
+        n_circs = 30
+        rad_min = 5
+        rad_max = 10
+        suggested_patch_size = 100
+        margin = 50
 
-        nChannels = 2
-        PI2D.createOutput(nChannels)
+        prm = np.arange(im_side)
+        x, y = np.meshgrid(prm, prm)
+        M = np.zeros((im_side, im_side))
+
+        c_rows = np.random.randint(im_side, size=n_circs)
+        c_cols = np.random.randint(im_side, size=n_circs)
+        rads = np.random.randint(rad_min, rad_max, size=n_circs)
+
+        for i in range(n_circs):
+            mask = np.sqrt((x-c_rows[i])**2+(y-c_cols[i])**2) < rads[i]
+            M[mask] = 1
+
+        PI2D.setup(np.double(M), suggested_patch_size, margin)
 
         for i in range(PI2D.NumPatches):
             P = PI2D.getPatch(i)
-            Q = np.zeros((nChannels,P.shape[0],P.shape[1]))
-            for j in range(nChannels):
-                Q[j,:,:] = P
-            PI2D.patchOutput(i,Q)
+            bbs, cts = labels_to_boxes_and_contours(mask2label(P > 0))
+            PI2D.patchOutput(i, bbs, cts)
 
-        J = PI2D.getValidOutput()
-        J = J[0,:,:]
+        PI2D.prepareOutput()
+        Output = PI2D.Output
 
-        D = np.abs(I-J)
-        print(np.max(D))
-
-        K = cat(1,cat(1,I,J),D)
-        imshow(K)
+        imshowlist([PI2D.OutputRaw, Output])
