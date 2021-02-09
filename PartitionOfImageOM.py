@@ -71,6 +71,9 @@ class PI2D:
             an integer greater than 0 and smaller than suggestedPatchSize/2
         """
 
+        PI2D.Boxes = []
+        PI2D.Contours = []
+
         PI2D.Image = image
         PI2D.SuggestedPatchSize = suggestedPatchSize
         PI2D.Margin = margin
