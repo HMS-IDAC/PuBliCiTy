@@ -51,6 +51,30 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="gpfunctions.boxes_IoU">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">boxes_IoU</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">box_a</span></em>, <em class="sig-param"><span class="n">box_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.boxes_IoU" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes the intersection over union coefficient for boxes</p>
+<dl class="simple">
+<dt><em>inputs:</em></dt><dd><p>box_a, box_b: box coordinate lists [xmin, ymin, xmax, ymax]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>area of intersection divided by area of union</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.boxes_intersect">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">boxes_intersect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">box_a</span></em>, <em class="sig-param"><span class="n">box_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.boxes_intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if two boxes intersect</p>
+<dl class="simple">
+<dt><em>inputs:</em></dt><dd><p>box_a, box_b: box coordinate lists [xmin, ymin, xmax, ymax]</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>True if boxes intersect, otherwise False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="gpfunctions.bwInterpSingleObjectMasks">
 <code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">bwInterpSingleObjectMasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.bwInterpSingleObjectMasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>interpolates two object masks</p>
@@ -484,6 +508,18 @@ if justfeatnames = False; otherwise just feature names</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="gpfunctions.imfillholes">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imfillholes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imfillholes" title="Permalink to this definition">¶</a></dt>
+<dd><p>binary fill holes</p>
+<dl class="simple">
+<dt><em>inputs</em>:</dt><dd><p>I: binary image</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>binary filled image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="gpfunctions.imgaussfilt">
 <code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">imgaussfilt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.imgaussfilt" title="Permalink to this definition">¶</a></dt>
 <dd><p>gaussian (blur) filter</p>
@@ -678,6 +714,19 @@ annotations on each plane correspond to a single closed contour</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="gpfunctions.labels_to_boxes_and_contours">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">labels_to_boxes_and_contours</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label_image</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.labels_to_boxes_and_contours" title="Permalink to this definition">¶</a></dt>
+<dd><p>finds object bounding boxes and contours from label image</p>
+<dl>
+<dt><em>input:</em></dt><dd><p>label image</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>boxes: list of boxes where each box is a list [xmin, ymin, xmax, ymax]</p>
+<p>contours: (n,2) array of (row, col) locations of contour points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="gpfunctions.list2stack">
 <code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">list2stack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.list2stack" title="Permalink to this definition">¶</a></dt>
 <dd><p>stacks a list of planes</p>
@@ -769,6 +818,30 @@ if justfeatnames = False, otherwise just feature names</p>
 <dt><em>input:</em></dt><dd><p>sigma: kernel sigma parameter</p>
 </dd>
 <dt><em>output:</em></dt><dd><p>3D kernel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.mask2label">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">mask2label</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.mask2label" title="Permalink to this definition">¶</a></dt>
+<dd><p>labels individual objects in binary mask</p>
+<dl class="simple">
+<dt><em>input:</em></dt><dd><p>mask: binary mask</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>image where each object has pixels of identical, unique value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gpfunctions.masks_IoU">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">masks_IoU</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask_a</span></em>, <em class="sig-param"><span class="n">mask_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.masks_IoU" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes the intersection over union coefficient for masks</p>
+<dl class="simple">
+<dt><em>inputs:</em></dt><dd><p>mask_a, mask_b: masks (binary images of the same size)</p>
+</dd>
+<dt><em>output:</em></dt><dd><p>area of intersection divided by area of union</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1678,6 +1751,84 @@ an integer greater than 0 and smaller than patchSize</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-PartitionOfImageOM">
+<span id="partitionofimageom"></span><h1>PartitionOfImageOM<a class="headerlink" href="#module-PartitionOfImageOM" title="Permalink to this headline">¶</a></h1>
+<p>split/merge utilities to help processing large images; ‘object masks’ version</p>
+<dl class="py class">
+<dt id="PartitionOfImageOM.PI2D">
+<em class="property">class </em><code class="sig-prename descclassname">PartitionOfImageOM.</code><code class="sig-name descname">PI2D</code><a class="headerlink" href="#PartitionOfImageOM.PI2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PartitionOfImage 2D</p>
+<p><em>demo:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im_side</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">n_circs</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">rad_min</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">rad_max</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">suggested_patch_size</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">margin</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="n">prm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">im_side</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">prm</span><span class="p">,</span> <span class="n">prm</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">im_side</span><span class="p">,</span> <span class="n">im_side</span><span class="p">))</span>
+
+<span class="n">c_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">im_side</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_circs</span><span class="p">)</span>
+<span class="n">c_cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">im_side</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_circs</span><span class="p">)</span>
+<span class="n">rads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">rad_min</span><span class="p">,</span> <span class="n">rad_max</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_circs</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_circs</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">c_rows</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">c_cols</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">rads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">M</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">PI2D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="n">suggested_patch_size</span><span class="p">,</span> <span class="n">margin</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PI2D</span><span class="o">.</span><span class="n">NumPatches</span><span class="p">):</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">getPatch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">bbs</span><span class="p">,</span> <span class="n">cts</span> <span class="o">=</span> <span class="n">labels_to_boxes_and_contours</span><span class="p">(</span><span class="n">mask2label</span><span class="p">(</span><span class="n">P</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">PI2D</span><span class="o">.</span><span class="n">patchOutput</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">bbs</span><span class="p">,</span> <span class="n">cts</span><span class="p">)</span>
+
+<span class="n">PI2D</span><span class="o">.</span><span class="n">prepareOutput</span><span class="p">()</span>
+<span class="n">Output</span> <span class="o">=</span> <span class="n">PI2D</span><span class="o">.</span><span class="n">Output</span>
+
+<span class="n">imshowlist</span><span class="p">([</span><span class="n">PI2D</span><span class="o">.</span><span class="n">OutputRaw</span><span class="p">,</span> <span class="n">Output</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="PartitionOfImageOM.PI2D.getPatch">
+<code class="sig-name descname">getPatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageOM.PI2D.getPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the i-th patch for processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageOM.PI2D.patchOutput">
+<code class="sig-name descname">patchOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bbs</span></em>, <em class="sig-param"><span class="n">cts</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageOM.PI2D.patchOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds result bounding boxes (bbs) and countours (cts)
+of i-th tile processing to the output image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageOM.PI2D.prepareOutput">
+<code class="sig-name descname">prepareOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageOM.PI2D.prepareOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>computes output with resolved intersections in overlapping areas
+which is accessible at PI2D.Output; the output with unresolved
+intersections is accessible at PI2D.OutputRaw</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="PartitionOfImageOM.PI2D.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">suggestedPatchSize</span></em>, <em class="sig-param"><span class="n">margin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PartitionOfImageOM.PI2D.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize PI2D</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>image: 2D image to partition; assumed double, single channel, in range [0, 1]</p>
+<p>suggestedPatchSize: suggested size of square patch (tile);
+actual patch sizes may vary depending on image size</p>
+<p>margin: half the amount of overlap between adjacent patches; margin should be
+an integer greater than 0 and smaller than suggestedPatchSize/2</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-unet2D">
 <span id="unet2d"></span><h1>unet2D<a class="headerlink" href="#module-unet2D" title="Permalink to this headline">¶</a></h1>
 <p>pixel classifier via convolutional neural networks (U-Net)</p>
@@ -1703,6 +1854,7 @@ an integer greater than 0 and smaller than patchSize</p>
 <li><a class="reference internal" href="#module-voxelclassifier">voxelclassifier</a></li>
 <li><a class="reference internal" href="#module-PartitionOfImage">PartitionOfImage</a></li>
 <li><a class="reference internal" href="#module-PartitionOfImageVC">PartitionOfImageVC</a></li>
+<li><a class="reference internal" href="#module-PartitionOfImageOM">PartitionOfImageOM</a></li>
 <li><a class="reference internal" href="#module-unet2D">unet2D</a></li>
 <li><a class="reference internal" href="#module-unet3D">unet3D</a></li>
 </ul>

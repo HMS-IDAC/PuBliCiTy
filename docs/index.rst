@@ -46,6 +46,13 @@ PartitionOfImageVC
    :members:
 
 
+PartitionOfImageOM
+==================
+
+.. automodule:: PartitionOfImageOM
+   :members:
+
+
 unet2D
 ==================
 
