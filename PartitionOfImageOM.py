@@ -182,7 +182,6 @@ class PI2D:
                 PI2D.Boxes.append(candidate_box)
                 PI2D.Contours.append(candidate_contour)
 
-
     def prepareOutput():
         """
         computes output with resolved intersections in overlapping areas

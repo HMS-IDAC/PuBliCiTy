@@ -145,7 +145,6 @@ class PI2D:
         elif len(P.shape) == 3:
             PI2D.Output[:,sr0:sr1,sc0:sc1] = P
 
-
     def demo():
         imSize = 210
         patchSize = 60
@@ -331,7 +330,6 @@ class PI3D:
             PI3D.Output[sz0:sz1,sr0:sr1,sc0:sc1] = P
         elif len(P.shape) == 4:
             PI3D.Output[sz0:sz1,:,sr0:sr1,sc0:sc1] = P
-
 
     def demo():
         imSize = 210

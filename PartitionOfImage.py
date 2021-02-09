@@ -190,7 +190,6 @@ class PI2D:
                     PI2D.Output[i,margin:margin+nr,margin:margin+nc] = np.divide(PI2D.Output[i,margin:margin+nr,margin:margin+nc],C)
             return PI2D.Output[:,margin:margin+nr,margin:margin+nc]
 
-
     def demo():
         I = np.random.rand(128,128)
         PI2D.setup(I,64,4,'accumulate')
@@ -414,7 +413,6 @@ class PI3D:
                 for i in range(PI3D.Output.shape[1]):
                     PI3D.Output[margin:margin+nz,i,margin:margin+nr,margin:margin+nc] = np.divide(PI3D.Output[margin:margin+nz,i,margin:margin+nr,margin:margin+nc],C)
             return PI3D.Output[margin:margin+nz,:,margin:margin+nr,margin:margin+nc]
-
 
     def demo():
         I = np.random.rand(128,128,128)
