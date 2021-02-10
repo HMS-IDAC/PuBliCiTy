@@ -170,7 +170,7 @@ class PI2D:
                         cc_box_a = imfillholes(cc_box_a)
                         cc_box_b = imfillholes(cc_box_b)
 
-                        if np.sum(cc_box_a*cc_box_b) > 0:
+                        if np.any(cc_box_a*cc_box_b):
                             candidate_area = np.sum(cc_box_a)
                             area = np.sum(cc_box_b)
                             if candidate_area > area:
