@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import tifffile
 import os
 import numpy as np
+from numpy.matlib import repmat
 from skimage import io as skio
 from scipy.ndimage import *
 from scipy.signal import convolve
@@ -2195,3 +2196,67 @@ def mask2label(mask):
     """
 
     return label(mask)
+
+def generateSynthCellsImage(im_size=800, n_circs=50, rad_min=30, rad_max=40, dist_factor=0.99):
+    """
+    generates synthetic image with cells (circles), and corresponding label image
+
+    *inputs:*
+        im_size: output image will be square of size im_size by im_size
+
+        n_circs: number of circles (cells)
+
+        rad_min: minimum cell radius
+
+        rad_max: maximum cell radius
+
+        dist_factor: float > 0; if dist_factor < 1, cells may overlap;
+        if dist_factor > 1, cells will not overlap; note that if dist_factor is too large,
+        the function may enter an infinite loop
+        since it may not be possible to draw n_circs with enough separation;
+        in general, all parameters should be picked so that drawing n_circs in an image
+        of size im_size by im_size is feasible
+
+    *outputs:*
+        I: double, range [0,1], grayscale image containing n_circs 
+
+        L: corresponding 
+    """
+
+    itv = np.arange(im_size)
+    X, Y = np.meshgrid(itv, itv)
+    I = 0.8*np.random.rand()+0.2*np.random.rand(im_size,im_size)
+    L = np.zeros(I.shape, dtype=np.uint8)
+
+    xyr = []
+    i_circ = 0
+    while i_circ < n_circs:
+        if xyr:
+            CS = np.array(xyr)
+            while True:
+                r0 = np.random.randint(im_size)
+                c0 = np.random.randint(im_size)
+                rd = np.random.randint(rad_min, rad_max)
+                C0 = repmat([r0, c0, rd], len(xyr), 1)
+                ds = C0[:,:2]-CS[:,:2]
+                ds = np.sqrt(np.sum(ds**2, axis=1))
+                if not np.any(ds < dist_factor*(C0[:,2]+CS[:,2])):
+                    xyr.append([r0, c0, rd])
+                    M = np.sqrt((X-r0)**2+(Y-c0)**2) < rd
+                    R = 0.2*np.random.rand(im_size, im_size)
+                    I[M] = 0.8*np.random.rand()+R[M]
+                    i_circ += 1
+                    L[M] = i_circ
+                    break
+        else:
+            r0 = np.random.randint(im_size)
+            c0 = np.random.randint(im_size)
+            rd = np.random.randint(rad_min, rad_max)
+            xyr.append([r0, c0, rd])
+            M = np.sqrt((X-r0)**2+(Y-c0)**2) < rd
+            R = 0.2*np.random.rand(im_size, im_size)
+            I[M] = 0.8*np.random.rand()+R[M]
+            i_circ += 1
+            L[M] = i_circ
+
+    return I, L
