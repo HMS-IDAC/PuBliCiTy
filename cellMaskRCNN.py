@@ -43,7 +43,7 @@ suggested_patch_size = 400
 # under mode 'deploy with PI2D', each image is square split in tiles
 # where each side has approximately this many pixels in length
 
-margin = 100
+margin = 200
 # under mode 'deploy with PI2D', each image is square split in tiles
 # where adjacent tiles overlap by about this many pixels
 
@@ -78,7 +78,7 @@ import math
 import matplotlib.pyplot as plt
 import random
 
-from gpfunctions import listfiles, tifread, imread, imshow, fileparts, imwrite, imerode, imgaussfilt, imadjust
+from gpfunctions import listfiles, tifread, imread, imshow, fileparts, imwrite, imerode, imgaussfilt, imadjust, imfillholes
 
 class Compose(object):
     def __init__(self, transforms):
@@ -176,6 +176,64 @@ def uint16Gray_to_doubleGray(I):
 def doubleGray_to_uint8RGB(I):
     assert I.dtype == 'float64'
     return np.uint8(255*np.stack([I,I,I],axis=2))
+
+def get_labels(im, mk, bb, sc):
+    pred_labels = np.zeros(im.shape)
+    i_label = 0
+    for i in range(bb.shape[0]):
+        x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
+        x1 = np.minimum(x1, im.shape[1]-1)
+        y1 = np.minimum(y1, im.shape[0]-1)
+        if sc[i] > 0.9:
+            mask_box = np.zeros(im.shape, dtype=bool)
+            mask_box[y0:y1,x0:x1] = True
+            mask_i = np.logical_and(mk[i,:,:] > 0.5, mask_box)
+            i_label += 1
+            pred_labels[mask_i] = i_label
+
+    return pred_labels
+
+def get_boxes_and_contours(im, mk, bb, sc):
+    boxes = []
+    contours = []
+    for i in range(bb.shape[0]):
+        x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
+        x1 = np.minimum(x1, im.shape[1]-1)
+        y1 = np.minimum(y1, im.shape[0]-1)
+        if sc[i] > 0.9:
+            boxes.append([x0, y0, x1, y1])
+
+            mask_box = np.zeros(im.shape, dtype=bool)
+            mask_box[y0:y1,x0:x1] = True
+
+            mask_i = np.logical_and(mk[i,:,:] > 0.5, mask_box)
+
+            ct = np.logical_and(mask_i, np.logical_not(imerode(mask_i,1)))
+            bd = np.zeros(mask_i.shape, dtype=bool)
+            bd[0,:] = True; bd[-1,:] = True; bd[:,0] = True; bd[:,-1] = True
+            bd = np.logical_and(bd, mask_i)
+            ct = np.logical_or(ct, bd)
+
+            ct_coords = np.argwhere(ct)
+            contours.append(ct_coords)
+
+    return boxes, contours
+
+def draw_boxes_and_contours(im, boxes, contours):
+    im2 = 0.9*np.copy(im)
+    for idx in range(len(boxes)):
+        xmin, ymin, xmax, ymax = boxes[idx]
+        ct = contours[idx]
+
+        im2[ymin:ymax, xmin] = 1
+        im2[ymin:ymax, xmax] = 1
+        im2[ymin, xmin:xmax] = 1
+        im2[ymax, xmin:xmax] = 1
+
+        for idx_ct in range(ct.shape[0]):
+            im2[ct[idx_ct,0], ct[idx_ct,1]] = 1
+
+    return im2
 
 class CellsDataset(torch.utils.data.Dataset):
     def __init__(self, root, transforms=None, load_annotations=True):
@@ -465,64 +523,15 @@ if mode == 'deploy':
             prediction = model([img.to(device_train)])
 
             im = np.mean(img.numpy(),axis=0)
-
-            p = prediction[0]['masks'][:, 0].cpu().numpy()
-            p_max = np.max(p,axis=0)
-
+            mk = prediction[0]['masks'][:, 0].cpu().numpy()
             bb = prediction[0]['boxes'].cpu().numpy()
             sc = prediction[0]['scores'].cpu().numpy()
 
-            im2 = 0.9*np.copy(im)
-            for i in range(bb.shape[0]):
-                x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
-                x1 = np.minimum(x1, im2.shape[1]-1)
-                y1 = np.minimum(y1, im2.shape[0]-1)
-                if sc[i] > 0.9:
-                    im2[y0:y1,x0] = 1
-                    im2[y0:y1,x1] = 1
-                    im2[y0,x0:x1] = 1
-                    im2[y1,x0:x1] = 1
-
-            imwrite(np.uint8(255*im2), deploy_path_out+'/'+file_name+'_bb.png')
-            imwrite(np.uint8(255*p_max), deploy_path_out+'/'+file_name+'_pm.png')
+            lb = get_labels(im, mk, bb, sc)
+            # imwrite(np.uint8(255*im), deploy_path_out+'/'+file_name+'_input.png')
+            imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_prediction.png')
 
 if mode == 'deploy with PI2D':
-    def get_boxes_and_contours(im, mk, bb, sc):
-        boxes = []
-        contours = []
-        for i in range(bb.shape[0]):
-            x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
-            x1 = np.minimum(x1, im.shape[1]-1)
-            y1 = np.minimum(y1, im.shape[0]-1)
-            if sc[i] > 0.9:
-                boxes.append([x0, y0, x1, y1])
-
-                mask_box = np.zeros(im.shape, dtype=bool)
-                mask_box[y0:y1,x0:x1] = True
-
-                mask_i = np.logical_and(mk[i,:,:] > 0.5, mask_box)
-                ct = np.logical_and(mask_i, np.logical_not(imerode(mask_i, 1)))
-                ct_coords = np.argwhere(ct)
-                contours.append(ct_coords)
-
-        return boxes, contours
-
-    def draw_boxes_and_contours(im):
-        im2 = 0.9*np.copy(im)
-        for idx in range(len(boxes)):
-            xmin, ymin, xmax, ymax = boxes[idx]
-            ct = contours[idx]
-
-            im2[ymin:ymax, xmin] = 1
-            im2[ymin:ymax, xmax] = 1
-            im2[ymin, xmin:xmax] = 1
-            im2[ymax, xmin:xmax] = 1
-
-            for idx_ct in range(ct.shape[0]):
-                im2[ct[idx_ct,0], ct[idx_ct,1]] = 1
-
-        return im2
-
     from PartitionOfImageOM import PI2D
 
     model.load_state_dict(torch.load(model_path))
@@ -551,10 +560,11 @@ if mode == 'deploy with PI2D':
             bb = prediction[0]['boxes'].cpu().numpy()
             sc = prediction[0]['scores'].cpu().numpy()
 
-            boxes, contours = get_boxes_and_contours(im, mk, bb, sc)
-            im2 = draw_boxes_and_contours(im)
+            # boxes, contours = get_boxes_and_contours(im, mk, bb, sc)
+            # im2 = draw_boxes_and_contours(im, boxes, contours)
 
-            imwrite(np.uint8(255*im2), deploy_path_out+'/'+file_name+'_1_full_size_prediction.png')
+            lb = get_labels(im, mk, bb, sc)
+            imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_1_full_size_prediction.png')
 
 
             # prediction with PI2D
@@ -580,13 +590,17 @@ if mode == 'deploy with PI2D':
 
                 PI2D.patchOutput(i_patch, boxes, contours)
                 
-            PI2D.prepareOutput()
+            contours = PI2D.Contours
+            lb = np.zeros(img_double.shape)
+            for idx in range(len(contours)):
+                ct = contours[idx]
+                mk = np.zeros(lb.shape, dtype=bool)
+                for rc in ct:
+                    mk[rc[0],rc[1]] = True
+                mk = imfillholes(mk)
+                lb[mk] = idx+1
 
-            otp_raw = PI2D.OutputRaw
-            otp = PI2D.Output
-
-            imwrite(np.uint8(255*otp), deploy_path_out+'/'+file_name+'_2_PI2D_prediction.png')
-            imwrite(np.uint8(255*otp_raw), deploy_path_out+'/'+file_name+'_3_PI2D_prediction_raw.png')
+            imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_2_PI2D_prediction.png')
 
 
 
