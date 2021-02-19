@@ -497,13 +497,6 @@ def dialog(message):
 @app.route('/')
 def index():
     return render_template('index.html')
-    # resp = make_response(render_template('index.html'))
-    # if request.cookies.get('ImageScienceClientID'):
-    #     print('using existing client id')
-    # else:
-    #     print('creating new client id')
-    #     resp.set_cookie('ImageScienceClientID', randString())
-    # return resp
 
 @app.route('/docs/<string:page_name>.html')
 def renderStatic(page_name):
@@ -571,12 +564,6 @@ def jsonUpload():
     elif parsed['description'] == 'fetchtb':
         tbPath = pathjoin(mainIA.scratchSubfolder,'Scratch.csv')
         return send_file(tbPath,mimetype='text/csv')
-
-# @app.route('/jsondownload', methods=['POST'])
-# def jsonDownload():
-#     # return send_file('/home/cicconet/Workspace/FlaskServer/Marcelo2D/Data/I001.tif',mimetype='image/tiff')
-#     return send_file('/home/cicconet/Workspace/FlaskServer/Marcelo2D/Data/Images.zip',mimetype='application/octet-stream')
-
         
 @app.route('/jsonfileupload', methods=['POST'])
 def jsonFileUpload():
@@ -599,12 +586,11 @@ def jsonFileUpload():
 
 if __name__ == '__main__':
     if devMode:
-        # deploys to the same machine (accessible at http://127.0.0.1:5000/; see terminal log)
-        # notice that 'localhost:5000' doesn't work
+        # deploys to the same machine (typically at localhost:5000; see terminal log)
         socketio.run(app, debug=True)
     else:
         # deploys to local wifi network
         # client should point to IP address of server in local network
         # ip can be found on Settings (Ubuntu) or System Preferences (Mac) app
-        # e.g.: accessible at http://10.119.56.26:5000/
+        # accessible at http://<local ip address>:5000/
         socketio.run(app, debug=False, host='0.0.0.0')
