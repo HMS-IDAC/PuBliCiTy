@@ -13,8 +13,7 @@ the interface of some routinely used functions from underlying libraries; (2) pr
 tools for the analysis of large images; (3) providing a web interface for image annotation,
 which can be used remotely and on tablets with pencils; (4) providing machine learning model
 implementations that are easy to read, train, and deploy – written in a way that minimizes
-complexity for users without a computer science or software development background. The
-source code is released here under an MIT-like license.
+complexity for users without a computer science or software development background.
 
 
 ## Brief Introduction
