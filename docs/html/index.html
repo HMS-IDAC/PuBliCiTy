@@ -288,6 +288,28 @@ means identically correlated to ‘ideal’ spot</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="gpfunctions.generateSynthCellsImage">
+<code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">generateSynthCellsImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">im_size</span><span class="o">=</span><span class="default_value">800</span></em>, <em class="sig-param"><span class="n">n_circs</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">rad_min</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">rad_max</span><span class="o">=</span><span class="default_value">40</span></em>, <em class="sig-param"><span class="n">dist_factor</span><span class="o">=</span><span class="default_value">0.99</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.generateSynthCellsImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates synthetic image with cells (circles), and corresponding label image</p>
+<dl>
+<dt><em>inputs:</em></dt><dd><p>im_size: output image will be square of size im_size by im_size</p>
+<p>n_circs: number of circles (cells)</p>
+<p>rad_min: minimum cell radius</p>
+<p>rad_max: maximum cell radius</p>
+<p>dist_factor: float &gt; 0; if dist_factor &lt; 1, cells may overlap;
+if dist_factor &gt; 1, cells will not overlap; note that if dist_factor is too large,
+the function may enter an infinite loop
+since it may not be possible to draw n_circs with enough separation;
+in general, all parameters should be picked so that drawing n_circs in an image
+of size im_size by im_size is feasible</p>
+</dd>
+<dt><em>outputs:</em></dt><dd><p>I: double, range [0,1], grayscale image containing n_circs</p>
+<p>L: corresponding</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="gpfunctions.histeq">
 <code class="sig-prename descclassname">gpfunctions.</code><code class="sig-name descname">histeq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">I</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpfunctions.histeq" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns histogram-equalized input</p>
@@ -1839,6 +1861,11 @@ an integer greater than 0 and smaller than suggestedPatchSize/2</p>
 <p>voxel classifier via convolutional neural networks (U-Net)</p>
 <p>see <em>control panel</em> section of unet3D.py for instructions</p>
 </div>
+<div class="section" id="module-cellMaskRCNN">
+<span id="cellmaskrcnn"></span><h1>cellMaskRCNN<a class="headerlink" href="#module-cellMaskRCNN" title="Permalink to this headline">¶</a></h1>
+<p>deep learning model for cell segmentation (Mask-RCNN)</p>
+<p>see <em>control panel</em> section of cellMaskRCNN.py for instructions</p>
+</div>
 
 
             <div class="clearer"></div>
@@ -1857,6 +1884,7 @@ an integer greater than 0 and smaller than suggestedPatchSize/2</p>
 <li><a class="reference internal" href="#module-PartitionOfImageOM">PartitionOfImageOM</a></li>
 <li><a class="reference internal" href="#module-unet2D">unet2D</a></li>
 <li><a class="reference internal" href="#module-unet3D">unet3D</a></li>
+<li><a class="reference internal" href="#module-cellMaskRCNN">cellMaskRCNN</a></li>
 </ul>
 
   <div role="note" aria-label="source link">

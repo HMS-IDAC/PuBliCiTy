@@ -67,6 +67,13 @@ unet3D
    :members:
 
 
+cellMaskRCNN
+==================
+
+.. automodule:: cellMaskRCNN
+   :members:
+
+
 .. Indices and tables
 .. ==================
 
