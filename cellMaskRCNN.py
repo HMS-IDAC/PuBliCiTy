@@ -12,7 +12,7 @@
 mode = 'deploy with PI2D'
 # chose from options: 'train', 'test', 'deploy', 'deploy with PI2D';
 # options 'deploy' and 'deploy with PI2D' have similar outputs,
-# but the later is recommended for large images
+# but the later is recommended for images with more than 100 cells
 
 num_epochs = 3
 # number of train epochs
@@ -78,7 +78,8 @@ import math
 import matplotlib.pyplot as plt
 import random
 
-from gpfunctions import listfiles, tifread, imread, imshow, fileparts, imwrite, imerode, imgaussfilt, imadjust, imfillholes
+from gpfunctions import listfiles, tifread, tifwrite, imread, imshow, fileparts, imwrite, imerode, \
+	imgaussfilt, imadjust, imfillholes
 
 class Compose(object):
     def __init__(self, transforms):
@@ -600,7 +601,7 @@ if mode == 'deploy with PI2D':
                 mk = imfillholes(mk)
                 lb[mk] = idx+1
 
-            imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_2_PI2D_prediction.png')
+            tifwrite(np.uint16(lb), deploy_path_out+'/'+file_name+'_2_PI2D_prediction.tif')
 
 
 
