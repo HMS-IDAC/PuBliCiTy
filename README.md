@@ -1,11 +1,4 @@
 # PuBliCiTy
-Python Bioimage Computing Toolkit
-
-
-## Documentation
-docs/html/index.html
-
-## Intro
 
 The Python Bioimage Computing Toolkit (PuBliCiTy) is an evolving set of functions,
 scripts, and classes, written primarily in Python, to facilitate the analysis of biological images,
@@ -21,5 +14,14 @@ tools for the analysis of large images; (3) providing a web interface for image 
 which can be used remotely and on tablets with pencils; (4) providing machine learning model
 implementations that are easy to read, train, and deploy – written in a way that minimizes
 complexity for users without a computer science or software development background. The
-source code is released under an MIT-like license at github.com/hms-idac/PuBliCiTy. Details,
-demos, and up-to-date documentation can be found at the project’s page as well.
+source code is released here under an MIT-like license.
+
+
+## Brief Introduction
+
+PuBliCiTy.pdf
+
+
+## Documentation
+
+docs/html/index.html
