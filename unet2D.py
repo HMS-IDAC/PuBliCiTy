@@ -9,12 +9,12 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = False
+restoreVariables = True
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = True
+train = False
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
@@ -23,17 +23,17 @@ test = False
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = False
+deploy = True
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = 'DataForPC/Deploy_In/I00000_Img.tif'
+deployImagePathIn = ''#'tutorials/DataForUNet2D/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-deployFolderPathIn = 'DataForPC/Deploy_In'
+deployFolderPathIn = 'tutorials/DataForUNet2D/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
 
-deployFolderPathOut = 'DataForPC/Deploy_Out'
+deployFolderPathOut = 'tutorials/DataForUNet2D/Deploy_Out'
 # folder path where outputs of prediction (probability maps) are saved;
 # the script ads _PMs to the respective input image name when naming the output
 
@@ -53,10 +53,10 @@ batchSize = 32
 modelPathIn = 'Models/unet2D_v0.ckpt'
 # input model path to recover model from (when restoreVariables = True)
 
-modelPathOut ='Models/unet2D_v0.ckpt'
+modelPathOut = 'Models/unet2D_v0.ckpt'
 # path where to save model
 
-reSplitTrainSet = True
+reSplitTrainSet = False
 # if to re-split training set into training/validation subsets;
 # this should be set to True every time the training set changes, which happens
 # the first time the model is trained, when new training examples are added to the training set;
@@ -93,7 +93,7 @@ learningRate = 0.00001
 nEpochs = 20
 # number of epochs
 
-useGPU = False
+useGPU = True
 # if to use GPU or not
 
 
