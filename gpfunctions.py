@@ -2220,7 +2220,7 @@ def generateSynthCellsImage(im_size=800, n_circs=50, rad_min=30, rad_max=40, dis
     *outputs:*
         I: double, range [0,1], grayscale image containing n_circs 
 
-        L: corresponding 
+        L: corresponding label image
     """
 
     itv = np.arange(im_size)
@@ -2258,5 +2258,71 @@ def generateSynthCellsImage(im_size=800, n_circs=50, rad_min=30, rad_max=40, dis
             I[M] = 0.8*np.random.rand()+R[M]
             i_circ += 1
             L[M] = i_circ
+
+    return I, L
+
+def generateSynthCellsImage3D(im_size=100, n_spheres=10, rad_min=10, rad_max=20, dist_factor=0.99):
+    """
+    generates synthetic 3D image with cells (spheres), and corresponding label image
+
+    *inputs:*
+        im_size: output image will be a cube of size im_size^3
+
+        n_spheres: number of spheres (cells)
+
+        rad_min: minimum cell radius
+
+        rad_max: maximum cell radius
+
+        dist_factor: float > 0; if dist_factor < 1, cells may overlap;
+        if dist_factor > 1, cells will not overlap; note that if dist_factor is too large,
+        the function may enter an infinite loop
+        since it may not be possible to draw n_spheres with enough separation;
+        in general, all parameters should be picked so that drawing n_spheres in an image
+        of size im_size^3 is feasible
+
+    *outputs:*
+        I: double, range [0,1], grayscale 3D image containing n_spheres
+
+        L: corresponding label image
+    """
+
+    itv = np.arange(im_size)
+    X, Y, Z = np.meshgrid(itv, itv, itv)
+    I = 0.8*np.random.rand()+0.2*np.random.rand(im_size,im_size,im_size)
+    L = np.zeros(I.shape, dtype=np.uint8)
+
+    xyzr = []
+    i_sphere = 0
+    while i_sphere < n_spheres:
+        if xyzr:
+            CS = np.array(xyzr)
+            while True:
+                r0 = np.random.randint(im_size)
+                c0 = np.random.randint(im_size)
+                p0 = np.random.randint(im_size)
+                rd = np.random.randint(rad_min, rad_max)
+                C0 = repmat([r0, c0, p0, rd], len(xyzr), 1)
+                ds = C0[:,:3]-CS[:,:3]
+                ds = np.sqrt(np.sum(ds**2, axis=1))
+                if not np.any(ds < dist_factor*(C0[:,3]+CS[:,3])):
+                    xyzr.append([r0, c0, p0, rd])
+                    M = np.sqrt((X-r0)**2+(Y-c0)**2+(Z-p0)**2) < rd
+                    R = 0.2*np.random.rand(im_size, im_size, im_size)
+                    I[M] = 0.8*np.random.rand()+R[M]
+                    i_sphere += 1
+                    L[M] = i_sphere
+                    break
+        else:
+            r0 = np.random.randint(im_size)
+            c0 = np.random.randint(im_size)
+            p0 = np.random.randint(im_size)
+            rd = np.random.randint(rad_min, rad_max)
+            xyzr.append([r0, c0, p0, rd])
+            M = np.sqrt((X-r0)**2+(Y-c0)**2+(Z-p0)**2) < rd
+            R = 0.2*np.random.rand(im_size, im_size, im_size)
+            I[M] = 0.8*np.random.rand()+R[M]
+            i_sphere += 1
+            L[M] = i_sphere
 
     return I, L
