@@ -9,21 +9,21 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = True
+restoreVariables = False
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = False
+train = True
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = True
+test = False
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = True
+deploy = False
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
@@ -41,7 +41,7 @@ imSize = 60
 # size of square image patches in the training set;
 # if len(nFeatMapsList) = 3 (see below), imSize = 60 leads to a prediction of size 20
 
-nClasses = 3
+nClasses = 2
 # number of pixel classes
 
 nChannels = 1
@@ -56,7 +56,7 @@ modelPathIn = 'Models/unet2D_v0.ckpt'
 modelPathOut ='Models/unet2D_v0.ckpt'
 # path where to save model
 
-reSplitTrainSet = False
+reSplitTrainSet = True
 # if to re-split training set into training/validation subsets;
 # this should be set to True every time the training set changes, which happens
 # the first time the model is trained, when new training examples are added to the training set;
@@ -72,13 +72,13 @@ logDir = 'Logs/unet2D'
 logPath = 'Logs/unet2D_TestSample.tif'
 # path where to save prediction on a random image from imPathTest (see below) during training
 
-imPath = 'DataForPC/Train_60'
+imPath = 'tutorials/DataForUNet2D/Train_60'
 # path to folder containing training/validation set;
 # images should be of size nChannels x imSize x imSize, named I%05d_Img.tif,
 # and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
 # where pixels of class 1,2,... have intensity value 1,2,... respectivelly
 
-imPathTest = 'DataForPC/Test'
+imPathTest = 'tutorials/DataForUNet2D/Test'
 # path to folder containing images for testing;
 # the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
 # for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif
@@ -93,7 +93,7 @@ learningRate = 0.00001
 nEpochs = 20
 # number of epochs
 
-useGPU = True
+useGPU = False
 # if to use GPU or not
 
 
