@@ -9,31 +9,31 @@
 # ----------------------------------------------------------------------------------------------------
 # control panel
 
-restoreVariables = True
+restoreVariables = False
 # if True: resume training (if train = True) from previous 'checkpoint' (stored at modelPathIn, set below)
 # if False: start training (if train = True) from scratch
 # to test or deploy a trained model, set restoreVariables = True
 
-train = False
+train = True
 # if True, the script goes over the training steps,
 # either updating a model from scratch or from a previous checkpoint;
 # check portions of the code inside the 'if train:' directive for details, or to adapt the code if needed
 
-test = True
+test = False
 # if True, the script runs predictions on a test set (defined by imPathTest below);
 # check portions of the code inside the 'if test:' directive for details, or to adapt the code if needed
 
-deploy = True
+deploy = False
 # if True, runs prediction either on a single image, or on a folder of images (see below);
 # check portions of the code inside the 'if deploy:' directive for details, or to adapt the code if needed
 
-deployImagePathIn = 'DataForVC/Deploy_In/I00000_Img.tif'
+deployImagePathIn = 'tutorials/DataForUNet3D/Deploy_In/I00000_Img.tif'
 # full path to image to deploy on; set to empty string, '', if you want to ignore this deployment option
 
-deployFolderPathIn = 'DataForVC/Deploy_In'
+deployFolderPathIn = 'tutorials/DataForUNet3D/Deploy_In'
 # full path to folder containing images deploy on; set to empty string, '', if you want to ignore this option
 
-deployFolderPathOut = 'DataForVC/Deploy_Out'
+deployFolderPathOut = 'tutorials/DataForUNet3D/Deploy_Out'
 # folder path where outputs of prediction (probability maps) are saved;
 # the script ads _PMs to the respective input image name when naming the output
 
@@ -69,12 +69,12 @@ logDir = 'Logs/unet3D'
 logPath = 'Logs/unet3D_TestSample.tif'
 # path where to save prediction on a random image from imPathTest (see below) during training
 
-imPath = 'DataForVC/Train_60'# path to folder containing training/validation set;
+imPath = 'tutorials/DataForUNet3D/Train_60'# path to folder containing training/validation set;
 # images should be of size imSize x imSize x imSize, named I%05d_Img.tif,
 # and having a corresponding I%05d_Ant.tif, a uint8 image of the same size,
 # where pixels of class 1,2,... have intensity value 1,2,... respectivelly
 
-imPathTest = 'DataForVC/Test'
+imPathTest = 'tutorials/DataForUNet3D/Test'
 # path to folder containing images for testing;
 # the test set is assumed to contain images I00000_Img.tif, I00001_Img.tif, etc.;
 # for each I%05d_Img.tif, the script saves corresponding probability maps as Pred_I%05d.tif
@@ -86,7 +86,7 @@ nFeatMapsList = [16,32,64]
 learningRate = 0.00001
 # learning rate
 
-nEpochs = 20
+nEpochs = 1
 # number of epochs
 
 useGPU = True
