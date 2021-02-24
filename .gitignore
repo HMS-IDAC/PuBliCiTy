@@ -4,6 +4,7 @@ DataForPC
 DataForVC
 DataForIS
 DataForUNet2D
+DataForUNet3D
 Server
 scratch.py
 scratch.ipynb
