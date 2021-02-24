@@ -39,6 +39,10 @@ deploy_path_out = 'tutorials/DataForCellMaskRCNN/DeployOut'
 # folder where outputs of inference are saved
 # used under modes 'deploy' and 'deploy with PI2D'
 
+min_score = 0.9
+# minimum score for cell selection during deployment;
+# should be between 0 and 1; lower scores imply more cells are selected
+
 suggested_patch_size = 400
 # under mode 'deploy with PI2D', each image is square split in tiles
 # where each side has approximately this many pixels in length
@@ -178,14 +182,14 @@ def doubleGray_to_uint8RGB(I):
     assert I.dtype == 'float64'
     return np.uint8(255*np.stack([I,I,I],axis=2))
 
-def get_labels(im, mk, bb, sc):
+def get_labels(im, mk, bb, sc, sel_sc):
     pred_labels = np.zeros(im.shape)
     i_label = 0
     for i in range(bb.shape[0]):
         x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
         x1 = np.minimum(x1, im.shape[1]-1)
         y1 = np.minimum(y1, im.shape[0]-1)
-        if sc[i] > 0.9:
+        if sc[i] > sel_sc:
             mask_box = np.zeros(im.shape, dtype=bool)
             mask_box[y0:y1,x0:x1] = True
             mask_i = np.logical_and(mk[i,:,:] > 0.5, mask_box)
@@ -194,14 +198,14 @@ def get_labels(im, mk, bb, sc):
 
     return pred_labels
 
-def get_boxes_and_contours(im, mk, bb, sc):
+def get_boxes_and_contours(im, mk, bb, sc, sel_sc):
     boxes = []
     contours = []
     for i in range(bb.shape[0]):
         x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
         x1 = np.minimum(x1, im.shape[1]-1)
         y1 = np.minimum(y1, im.shape[0]-1)
-        if sc[i] > 0.9:
+        if sc[i] > sel_sc:
             boxes.append([x0, y0, x1, y1])
 
             mask_box = np.zeros(im.shape, dtype=bool)
@@ -494,7 +498,7 @@ if mode == 'test':
                 x0, y0, x1, y1 = np.round(bb[i,:]).astype(int)
                 x1 = np.minimum(x1, im2.shape[1]-1)
                 y1 = np.minimum(y1, im2.shape[0]-1)
-                if sc[i] > 0.9:
+                if sc[i] > min_score:
                     im2[y0:y1,x0] = 1
                     im2[y0:y1,x1] = 1
                     im2[y0,x0:x1] = 1
@@ -528,7 +532,7 @@ if mode == 'deploy':
             bb = prediction[0]['boxes'].cpu().numpy()
             sc = prediction[0]['scores'].cpu().numpy()
 
-            lb = get_labels(im, mk, bb, sc)
+            lb = get_labels(im, mk, bb, sc, min_score)
             # imwrite(np.uint8(255*im), deploy_path_out+'/'+file_name+'_input.png')
             imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_prediction.png')
 
@@ -561,10 +565,10 @@ if mode == 'deploy with PI2D':
             bb = prediction[0]['boxes'].cpu().numpy()
             sc = prediction[0]['scores'].cpu().numpy()
 
-            # boxes, contours = get_boxes_and_contours(im, mk, bb, sc)
+            # boxes, contours = get_boxes_and_contours(im, mk, bb, sc, min_score)
             # im2 = draw_boxes_and_contours(im, boxes, contours)
 
-            lb = get_labels(im, mk, bb, sc)
+            lb = get_labels(im, mk, bb, sc, min_score)
             imwrite(np.uint8(lb), deploy_path_out+'/'+file_name+'_1_full_size_prediction.png')
 
 
@@ -587,7 +591,7 @@ if mode == 'deploy with PI2D':
                 bb = prediction[0]['boxes'].cpu().numpy()
                 sc = prediction[0]['scores'].cpu().numpy()
 
-                boxes, contours = get_boxes_and_contours(im, mk, bb, sc)
+                boxes, contours = get_boxes_and_contours(im, mk, bb, sc, min_score)
 
                 PI2D.patchOutput(i_patch, boxes, contours)
                 
