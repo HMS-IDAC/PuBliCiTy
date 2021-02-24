@@ -20,7 +20,7 @@ num_epochs = 3
 model_path = 'Models/cell-mask-rcnn-model.pt'
 # where to save the model
 
-dataset_path = 'DataForIS/TrainTest'
+dataset_path = 'tutorials/DataForCellMaskRCNN/TrainTest'
 # path to folder containing images and labels;
 # images should be 16-bit, single channel, .tif files;
 # labels should be 8-bit .png files, where pixels from each cell have unique, identical, integer labels
@@ -29,13 +29,13 @@ dataset_path = 'DataForIS/TrainTest'
 train_subset_fraction = 0.9
 # fraction of dataset used to train; remaining goes to 'test' subset
 
-deploy_path_in = 'DataForIS/DeployIn'
+deploy_path_in = 'tutorials/DataForCellMaskRCNN/DeployIn'
 # folder containing images to perform inference on after training
 # used under modes 'deploy' and 'deploy with PI2D';
 # images should be 16-bit, single channel, .tif files;
 # no other files should be in this folder
 
-deploy_path_out = 'DataForIS/DeployOut'
+deploy_path_out = 'tutorials/DataForCellMaskRCNN/DeployOut'
 # folder where outputs of inference are saved
 # used under modes 'deploy' and 'deploy with PI2D'
 
