@@ -8,6 +8,7 @@ Dependencies:
 	conda install scikit-image
 	pip install joblib
 	pip install scikit-learn
+	pip install pandas
 
 	(for unet2D.py and unet3D.py)
 	conda install -c anaconda tensorflow-gpu
