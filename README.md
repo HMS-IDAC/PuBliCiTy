@@ -16,11 +16,6 @@ implementations that are easy to read, train, and deploy – written in a way th
 complexity for users without a computer science or software development background.
 
 
-## Overview
-
-TBD
-
-
 ## Tutorials
 
 tutorials/

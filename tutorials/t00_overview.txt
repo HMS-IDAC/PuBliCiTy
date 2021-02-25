@@ -1,0 +1,10 @@
+This folder contains various tutorials for different parts of the toolkit.
+
+While some tutorials have multiple files, the root files are:
+
+t01_pixelclassifier.html
+t02_voxelclassifier.html
+t03_unet2D.pdf
+t04_unet3D.pdf
+t05_cellMaskRCNN.pdf
+t06_publicityWebApp.pdf
