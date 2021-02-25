@@ -1,31 +1,25 @@
-Dependencies:
-	(note: developed using env with Python 3.6)
+Developed using env with Python 3.6
 
+Dependencies:
+	(general dependencies)
 	conda install -c conda-forge opencv
 	conda install -c anaconda matplotlib
 	pip install tifffile
 	conda install scikit-image
 	pip install joblib
 	pip install scikit-learn
-	pip install tensorflow (batch normalization not working in 2D with GPU)
 
-	(the following worked on idac machine with python 3.6)
+	(for unet2D.py and unet3D.py)
 	conda install -c anaconda tensorflow-gpu
 
-	(for remote work)
-	conda install -c conda-forge jupyterlab
-
-	(for webapp)
+	(for publicityWebApp)
 	conda install -c anaconda flask
 	conda install -c conda-forge flask-socketio
 	conda install -c anaconda gevent
 	conda install -c anaconda gevent-websocket
 
+	(for cellMaskRCNN.py)
+	see https://pytorch.org/ for installation instructions
 
-Upgrading code to TensorFlow 2:
-	https://www.tensorflow.org/guide/upgrade
-
-Building documentation:
-	https://medium.com/@richdayandnight/a-simple-tutorial-on-how-to-document-your-python-project-using-sphinx-and-rinohtype-177c22a15b5b
-
-	http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html
+	(for remote work)
+	conda install -c conda-forge jupyterlab

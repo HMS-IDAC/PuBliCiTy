@@ -9,6 +9,7 @@ DataForCellMaskRCNN
 Server
 scratch.py
 scratch.ipynb
+ScratchNotes.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
