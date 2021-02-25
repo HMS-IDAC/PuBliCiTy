@@ -3,7 +3,7 @@
 The Python Bioimage Computing Toolkit (PuBliCiTy) is an evolving set of functions,
 scripts, and classes, written primarily in Python, to facilitate the analysis of biological images,
 of two or more dimensions, from electron or light microscopes. While the early development was
-guided by the goal of replacing an existing internal MATLAB code-base with Python code, the
+guided by the goal of replacing an existing internal code-base with Python code, the
 effort later came to include novel tools, specially in the areas of machine learning infrastructure
 and model development. The toolkit is built on top of the so-called python data science stack,
 which includes numpy, scipy, scikit-image, scikit-learn, and pandas. It also contains some deep
