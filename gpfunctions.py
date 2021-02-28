@@ -2226,7 +2226,7 @@ def generateSynthCellsImage(im_size=800, n_circs=50, rad_min=30, rad_max=40, dis
     itv = np.arange(im_size)
     X, Y = np.meshgrid(itv, itv)
     I = 0.8*np.random.rand()+0.2*np.random.rand(im_size,im_size)
-    L = np.zeros(I.shape, dtype=np.uint8)
+    L = np.zeros(I.shape, dtype=np.uint16)
 
     xyr = []
     i_circ = 0
@@ -2290,7 +2290,7 @@ def generateSynthCellsImage3D(im_size=100, n_spheres=10, rad_min=10, rad_max=20,
     itv = np.arange(im_size)
     X, Y, Z = np.meshgrid(itv, itv, itv)
     I = 0.8*np.random.rand()+0.2*np.random.rand(im_size,im_size,im_size)
-    L = np.zeros(I.shape, dtype=np.uint8)
+    L = np.zeros(I.shape, dtype=np.uint16)
 
     xyzr = []
     i_sphere = 0
