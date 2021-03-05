@@ -1,5 +1,6 @@
 """
-resolves overlap in box/contour predictions from multiple inference models
+resolves overlap in box/contour predictions from multiple inference models,
+similarly to how PartitionOfImageOM resoves overlap, but without partitioning the image
 """
 
 import numpy as np
