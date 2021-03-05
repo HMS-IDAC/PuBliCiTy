@@ -2326,3 +2326,33 @@ def generateSynthCellsImage3D(im_size=100, n_spheres=10, rad_min=10, rad_max=20,
             L[M] = i_sphere
 
     return I, L
+
+def draw_boxes_and_contours(im, boxes, contours):
+    """
+    draws boxes and contours on top of grayscale image
+
+    *inputs:*
+        im: grayscale, range [0, 1], single-channel image
+
+        boxes: list of bounding boxes [xmin, ymin, xmax, ymax], where y = rows, x = cols
+
+        contours: list of contours, where contours is a Nx2 array with each row being a [row, col] contour location
+
+    *outputs:*
+        image the same size as im with boxes and contours drawn
+    """
+
+    im2 = 0.25*np.copy(im)
+    for idx in range(len(boxes)):
+        xmin, ymin, xmax, ymax = boxes[idx]
+        ct = contours[idx]
+
+        im2[ymin:ymax, xmin] = 0.5
+        im2[ymin:ymax, xmax] = 0.5
+        im2[ymin, xmin:xmax] = 0.5
+        im2[ymax, xmin:xmax] = 0.5
+
+        for idx_ct in range(ct.shape[0]):
+            im2[ct[idx_ct,0], ct[idx_ct,1]] = 1
+
+    return im2

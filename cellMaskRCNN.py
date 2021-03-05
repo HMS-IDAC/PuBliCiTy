@@ -83,7 +83,7 @@ import matplotlib.pyplot as plt
 import random
 
 from gpfunctions import listfiles, tifread, tifwrite, imread, imshow, fileparts, imwrite, imerode, \
-	imgaussfilt, imadjust, imfillholes
+	imgaussfilt, imadjust, imfillholes, draw_boxes_and_contours
 
 class Compose(object):
     def __init__(self, transforms):
@@ -223,22 +223,6 @@ def get_boxes_and_contours(im, mk, bb, sc, sel_sc):
             contours.append(ct_coords)
 
     return boxes, contours
-
-def draw_boxes_and_contours(im, boxes, contours):
-    im2 = 0.9*np.copy(im)
-    for idx in range(len(boxes)):
-        xmin, ymin, xmax, ymax = boxes[idx]
-        ct = contours[idx]
-
-        im2[ymin:ymax, xmin] = 1
-        im2[ymin:ymax, xmax] = 1
-        im2[ymin, xmin:xmax] = 1
-        im2[ymax, xmin:xmax] = 1
-
-        for idx_ct in range(ct.shape[0]):
-            im2[ct[idx_ct,0], ct[idx_ct,1]] = 1
-
-    return im2
 
 class CellsDataset(torch.utils.data.Dataset):
     def __init__(self, root, transforms=None, load_annotations=True):
